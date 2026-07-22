@@ -28,8 +28,8 @@
 		"Dining Hall": `<path d="M3.5 15a8.5 8.5 0 0 1 17 0"/><path d="M2 15h20"/><path d="M12 6.5V4"/>`,
 	};
 	const CAMPUS: [number, number] = [28.525, 77.5735];
-	const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-	const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+	const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png";
+	const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png";
 
 	const PLACES: Place[] = [
 		// ---- Hostels ----
