@@ -3,6 +3,8 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
 	<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-H696DVPSCP"></script>
 	<script>
@@ -16,4 +18,13 @@
 <body data-sveltekit-preload-data="hover">
 	<div style="display: contents">%sveltekit.body%</div>
 </body>
-</html>
+
+ <script>
+   if (navigator.userAgent.match(/samsung/i)) {
+       alert("Your browser (Samsung Internet) might not be showing you this " + 
+             "website correctly. Please use a standards-compliant browser instead" +
+             "\n\n" + "We recommend Firefox, Microsoft Edge, " + 
+             "or Google Chrome.");
+   }
+</script>
+

@@ -28,8 +28,8 @@
 		"Dining Hall": `<path d="M3.5 15a8.5 8.5 0 0 1 17 0"/><path d="M2 15h20"/><path d="M12 6.5V4"/>`,
 	};
 	const CAMPUS: [number, number] = [28.525, 77.5735];
-	const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
-	const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+	const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png";
+	const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png";
 
 	const PLACES: Place[] = [
 		// ---- Hostels ----
@@ -241,8 +241,18 @@
 
 			cluster = L.markerClusterGroup({
 				showCoverageOnHover: false, maxClusterRadius: 45, spiderfyDistanceMultiplier: 1.6,
-				iconCreateFunction: (c: any) =>
-					L.divIcon({ html: `<div class="cluster">${c.getChildCount()}</div>`, className: "", iconSize: [34, 34] }),
+				iconCreateFunction: (c: any) => {
+					const n = c.getChildCount();
+					return L.divIcon({
+						html:
+							`<div class="cluster">` +
+							`<span class="cl-back cl-back2"></span><span class="cl-back cl-back1"></span>` +
+							`<span class="cl-main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7l8 4 8-4-8-4Z"/><path d="M4 11l8 4 8-4"/><path d="M4 15l8 4 8-4"/></svg></span>` +
+							`<span class="cl-count">${n}</span></div>`,
+						className: "",
+						iconSize: [0, 0],
+					});
+				},
 			}).addTo(map);
 
 			for (const p of PLACES) {
@@ -484,7 +494,29 @@
 		.pin { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--shadow); transition: transform 0.12s; }
 		.pin svg { width: 14px; height: 14px; }
 		.pin:hover { transform: translate(-1px, -1px); }
-		.cluster { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--card); border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--shadow); font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 13px; color: var(--ink); }
+		.cluster {
+			position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+			width: 28px; height: 28px; transition: transform 0.12s;
+		}
+		.cluster:hover { transform: translate(-50%, -50%) translate(-1px, -1px); }
+		.cl-back {
+			position: absolute; inset: 0; border-radius: 50%;
+			background: var(--card); border: 2px solid var(--ink);
+		}
+		.cl-back2 { transform: translate(6px, 6px) scale(0.82); opacity: 0.5; }
+		.cl-back1 { transform: translate(3px, 3px) scale(0.91); opacity: 0.75; }
+		.cl-main {
+			position: absolute; inset: 0; display: grid; place-items: center;
+			border-radius: 50%; background: var(--ink); border: 2px solid var(--ink);
+			box-shadow: 2px 2px 0 var(--shadow);
+		}
+		.cl-main svg { width: 14px; height: 14px; stroke: var(--card); }
+		.cl-count {
+			position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 3px;
+			display: grid; place-items: center; border-radius: 999px;
+			background: var(--accent); color: #fff; border: 2px solid var(--card);
+			font-family: Arial, Helvetica, sans-serif; font-weight: 800; font-size: 10.5px;
+		}
 		.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: none; }
 
 		.leaflet-popup-content-wrapper { background: var(--card); color: var(--ink); border-radius: 4px; border: 2px solid var(--ink); box-shadow: 6px 6px 0 var(--shadow); }
