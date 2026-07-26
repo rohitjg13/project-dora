@@ -28,8 +28,16 @@
 		"Dining Hall": `<path d="M3.5 15a8.5 8.5 0 0 1 17 0"/><path d="M2 15h20"/><path d="M12 6.5V4"/>`,
 	};
 	const CAMPUS: [number, number] = [28.525, 77.5735];
-	const LIGHT_TILES = "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png";
-	const DARK_TILES = "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png";
+	// Voyager over light_nolabels: it actually paints greenery green and built-up areas grey.
+	// One layer for both themes — dark mode dims it with a filter and buries the surroundings
+	// under the mask, so the campus stays in colour instead of going black with everything else.
+	const TILES = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
+
+	// Campus perimeter — OSM way 369248213 ("Shiv Nadar University" / Institute of Eminence).
+	// ponytail: baked in rather than fetched from Overpass at runtime; re-pull if the campus expands.
+	const CAMPUS_BOUNDARY: [number, number][] = [
+		[28.53358, 77.576059], [28.533299, 77.575877], [28.533803, 77.575111], [28.533306, 77.574635], [28.533648, 77.574155], [28.533494, 77.574024], [28.533116, 77.574496], [28.532715, 77.573997], [28.532622, 77.574088], [28.531964, 77.573353], [28.531374, 77.573805], [28.530905, 77.573363], [28.530878, 77.573388], [28.530649, 77.57312], [28.530814, 77.572832], [28.530122, 77.57221], [28.53023, 77.572029], [28.529514, 77.571504], [28.529218, 77.571603], [28.529086, 77.571636], [28.528903, 77.571677], [28.52878, 77.571682], [28.52869, 77.571652], [28.528582, 77.571594], [28.528175, 77.571272], [28.528051, 77.571191], [28.527914, 77.571136], [28.527723, 77.571075], [28.5275, 77.570992], [28.527315, 77.570907], [28.527104, 77.570785], [28.526838, 77.570657], [28.526589, 77.570518], [28.526344, 77.570412], [28.526083, 77.570321], [28.525838, 77.570177], [28.525111, 77.569779], [28.524954, 77.569688], [28.524855, 77.569875], [28.524303, 77.569433], [28.523709, 77.569083], [28.523301, 77.5689], [28.522942, 77.568759], [28.522779, 77.568627], [28.522417, 77.568258], [28.522072, 77.567953], [28.521817, 77.568771], [28.521757, 77.568752], [28.521659, 77.568667], [28.52138, 77.568394], [28.521021, 77.568765], [28.520884, 77.568897], [28.520753, 77.569007], [28.520523, 77.569217], [28.520347, 77.569398], [28.52019, 77.569642], [28.520667, 77.570065], [28.520277, 77.570494], [28.519768, 77.571082], [28.519635, 77.571266], [28.519553, 77.571391], [28.519522, 77.571423], [28.519437, 77.571508], [28.519284, 77.5717], [28.519207, 77.571808], [28.519174, 77.572414], [28.51913, 77.572942], [28.519097, 77.57305], [28.519056, 77.573143], [28.51892, 77.573545], [28.518833, 77.573773], [28.518738, 77.573892], [28.518526, 77.574155], [28.51837, 77.574375], [28.518201, 77.574663], [28.518028, 77.574942], [28.517809, 77.575264], [28.518753, 77.575764], [28.519, 77.575894], [28.519798, 77.57632], [28.521402, 77.577125], [28.521844, 77.577323], [28.52242, 77.577529], [28.523789, 77.578035], [28.524208, 77.578203], [28.524346, 77.578053], [28.524394, 77.578015], [28.524578, 77.578144], [28.525029, 77.578486], [28.525302, 77.578755], [28.525432, 77.578932], [28.525587, 77.578755], [28.526206, 77.578986], [28.526656, 77.579178], [28.527047, 77.579465], [28.526885, 77.57998], [28.526363, 77.58114], [28.526564, 77.581312], [28.526915, 77.580974], [28.527213, 77.580585], [28.527727, 77.581045], [28.527949, 77.580761], [28.528284, 77.581024], [28.528479, 77.580764], [28.528637, 77.580523], [28.528916, 77.580125], [28.529581, 77.580748], [28.529368, 77.581008], [28.529975, 77.581553], [28.530924, 77.580127], [28.530688, 77.579903], [28.530842, 77.579718], [28.530234, 77.579055], [28.530618, 77.578599], [28.530173, 77.578044], [28.53028, 77.577933], [28.529747, 77.577226], [28.529236, 77.576654], [28.528802, 77.576141], [28.529013, 77.575838], [28.528975, 77.575809], [28.529253, 77.575468], [28.529861, 77.576026], [28.530042, 77.576189], [28.530363, 77.576669], [28.530822, 77.577298], [28.531, 77.577163], [28.531459, 77.577788], [28.531772, 77.577455], [28.531473, 77.577084], [28.531878, 77.576538], [28.532183, 77.576135], [28.532554, 77.576613], [28.533015, 77.576059], [28.533365, 77.576388],
+	];
 
 	const PLACES: Place[] = [
 		// ---- Hostels ----
@@ -110,7 +118,6 @@
 
 	let L: any;
 	let map: any;
-	let tiles: any;
 	let cluster: any;
 	let allBounds: any;
 	let mapEl: HTMLElement;
@@ -153,7 +160,6 @@
 	function toggleTheme() {
 		theme = theme === "dark" ? "light" : "dark";
 		try { localStorage.setItem("dora-map-theme", theme); } catch {}
-		tiles?.setUrl(theme === "dark" ? DARK_TILES : LIGHT_TILES);
 	}
 
 	let startY = 0;
@@ -235,8 +241,17 @@
 			ro.observe(mapEl);
 			requestAnimationFrame(() => map?.invalidateSize());
 			setTimeout(() => map?.invalidateSize(), 300);
-			tiles = L.tileLayer(theme === "dark" ? DARK_TILES : LIGHT_TILES, {
+			L.tileLayer(TILES, {
 				maxZoom: 20, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO",
+			}).addTo(map);
+
+			// Campus as a hole in a world-sized rectangle: dims everything off-campus so the
+			// perimeter reads as a shape instead of a dashed line floating over blank farmland.
+			L.polygon([[[-89, -179], [-89, 179], [89, 179], [89, -179]], CAMPUS_BOUNDARY], {
+				className: "campus-mask", stroke: false, fillOpacity: 0.62, interactive: false,
+			}).addTo(map);
+			L.polygon(CAMPUS_BOUNDARY, {
+				className: "campus-edge", weight: 2.5, dashArray: "7 5", fill: false, interactive: false,
 			}).addTo(map);
 
 			cluster = L.markerClusterGroup({
@@ -390,7 +405,15 @@
 		z-index: 0;
 		background: var(--mapbg);
 	}
-	.dark :global(.leaflet-tile-pane) { filter: brightness(1.28); }
+	/* Carto's base tiles are washed out — push saturation so greenery reads green and
+	   built-up areas read grey instead of near-white. Tune here, nothing else depends on it. */
+	/* saturate() leaves neutrals alone: greenery gets richer, greys just get darker via brightness. */
+	:global(.leaflet-tile-pane) { filter: saturate(2) contrast(1.08) brightness(0.93); }
+	.dark :global(.leaflet-tile-pane) { filter: saturate(2.6) contrast(1.02) brightness(0.8); }
+	:global(.campus-edge) { stroke: var(--accent); }
+	:global(.campus-mask) { fill: var(--paper); }
+	/* Dark mode: drown everything off-campus so only Shiv Nadar keeps its colour. */
+	.dark :global(.campus-mask) { fill-opacity: 0.48; }
 
 	.toggle {
 		position: absolute;
