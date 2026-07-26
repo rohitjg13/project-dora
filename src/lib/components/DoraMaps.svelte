@@ -141,11 +141,17 @@
 		cluster.addLayers(shown.map((p) => markers.get(p)).filter(Boolean));
 	}
 
-	// A zone's word only makes sense while some of its pins are on screen.
+	// A zone's word shows only while some of its pins are on screen and the map is zoomed in
+	// enough to hold it. Zoomed out the text keeps its pixel size while the campus shrinks, so
+	// it ends up straddling the map and colliding with the cluster bubbles; 17 is where the
+	// clusters break apart and there's room. Shrinking it instead just made unreadable specks.
+	const ZONE_MIN_ZOOM = 17;
+
 	function renderZones() {
 		if (!map) return;
+		const roomy = map.getZoom() >= ZONE_MIN_ZOOM;
 		for (const [type, label] of zones) {
-			if (shown.some((p) => p.type === type)) label.addTo(map);
+			if (roomy && shown.some((p) => p.type === type)) label.addTo(map);
 			else label.remove();
 		}
 	}
@@ -251,6 +257,7 @@
 
 			map = L.map(mapEl, { zoomControl: false, attributionControl: true }).setView(CAMPUS, 16);
 			L.control.zoom({ position: "bottomright" }).addTo(map);
+			map.on("zoomend", renderZones);
 
 			// Leaflet measures the container once at init; if fonts/layout settle
 			// afterwards it keeps a stale size and only renders tiles in a corner.
@@ -368,7 +375,7 @@
 	>
 		<div class="drag-head" role="presentation" onpointerdown={grabDown} onpointermove={grabMove} onpointerup={grabUp}>
 			<div class="grab"><span></span></div>
-			<h1>Snoopy</h1>
+			<h1>Sno<em>opy</em></h1>
 		</div>
 		<div class="phead">
 			<label class="search">
