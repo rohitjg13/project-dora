@@ -4,7 +4,7 @@
 </script>
 
 <Seo
-	title="Dora Maps"
+	title="Snoopy"
 	description="Find any hostel, block, mess, court or facility on the SNIoE campus and get one-tap Google Maps directions."
 	image="default"
 />

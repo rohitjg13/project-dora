@@ -9,7 +9,7 @@
 
 	let { title, description, image = "default" }: Props = $props();
 
-	const siteName = "Dora Maps";
+	const siteName = "Snoopy";
 	const fullTitle = $derived(`${title} · ${siteName}`);
 	const url = $derived(page.url.href);
 	const imageUrl = $derived(new URL(`/og/${image}.png`, page.url.origin).href);

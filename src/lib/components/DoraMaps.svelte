@@ -10,12 +10,12 @@
 
 	// Category → pin colour (muted, editorial palette)
 	const COLORS: Record<string, string> = {
-		Hostels: "#294156",
-		"Academic Blocks": "#7c2d3a",
-		Essentials: "#3f6f8f",
-		Food: "#bd7d16",
-		Healthcare: "#cf3f1e",
-		"Dining Hall": "#6d4b7a",
+		Hostels: "#2f5fd8",
+		"Academic Blocks": "#d21f4b",
+		Essentials: "#0ea5c4",
+		Food: "#f2960b",
+		Healthcare: "#e8311c",
+		"Dining Hall": "#9d2fd1",
 	};
 
 	// Category → SVG icon (inner markup, drawn as a white stroke on the pin)
@@ -321,7 +321,7 @@
 	>
 		<div class="drag-head" role="presentation" onpointerdown={grabDown} onpointermove={grabMove} onpointerup={grabUp}>
 			<div class="grab"><span></span></div>
-			<h1>Dora <em>Maps</em></h1>
+			<h1>Snoopy</h1>
 		</div>
 		<div class="phead">
 			<label class="search">
@@ -364,7 +364,7 @@
 		--card: #f7f2e7;
 		--ink: #191712;
 		--muted: #6b6353;
-		--accent: #cf3f1e;
+		--accent: #ff4d1c;
 		--shadow: #191712;
 		--line: #ddd3bf;
 		--mapbg: #e7ded0;
@@ -379,7 +379,7 @@
 		--card: #2b261d;
 		--ink: #ece3d2;
 		--muted: #9c9079;
-		--accent: #ef6a44;
+		--accent: #ff7a45;
 		--shadow: #0b0906;
 		--line: #3b362c;
 		--mapbg: #16130d;
