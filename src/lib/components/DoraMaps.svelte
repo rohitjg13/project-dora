@@ -88,13 +88,26 @@
 
 	const types = ["All", ...Object.keys(COLORS).filter((t) => PLACES.some((p) => p.type === t))];
 
-	// Where each district's word sits. Placed by hand, not averaged from the pins — an average
-	// drifts into the fields west of the blocks. Only these two are districts; Food, Essentials
-	// and Healthcare are 2-3 scattered points, so a group label would land nowhere meaningful.
-	const ZONES: Record<string, [number, number]> = {
-		Hostels: [28.524024, 77.571873], // between Gir 3A and Periyar 2C
-		"Academic Blocks": [28.525966, 77.576309], // over the A-D building mass
-	};
+	// Words laid over the map. `type` is only used to hide a word when its category is filtered
+	// out; `minZoom` keeps the two tiers apart — the cluster names sit ~120px from HOSTELS at
+	// z17 and would collide with it, so they wait until z18, where that gap doubles.
+	// Positions are the mean of the pins named in the comment; the districts are hand-placed
+	// because an average drifts off into the fields west of the blocks.
+	const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; sub?: boolean }[] = [
+		{ text: "Hostels", type: "Hostels", at: [28.524024, 77.571873], minZoom: 17 }, // Gir 3A ↔ Periyar 2C
+		{ text: "Academic Blocks", type: "Academic Blocks", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
+		// Sunderbans 1A + Chilika 1B
+		{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, sub: true },
+		// Kaziranga 2BX + 2B, Hemis 2A, Periyar 2C
+		{ text: "Cluster 2", type: "Hostels", at: [28.522951, 77.57325], minZoom: 18, sub: true },
+		// Gir 3A, Dibang 3B, Kanha 3C
+		{ text: "Cluster 3", type: "Hostels", at: [28.524934, 77.571085], minZoom: 18, sub: true },
+		// Clusters 4-6 share one coordinate per cluster — every block in them sits on the same
+		// point, so the word is dropped 9m south of it, near enough to read as on the pin.
+		{ text: "Cluster 4", type: "Hostels", at: [28.523733, 77.569573], minZoom: 18, sub: true },
+		{ text: "Cluster 5", type: "Hostels", at: [28.523066, 77.569267], minZoom: 18, sub: true },
+		{ text: "Cluster 6", type: "Hostels", at: [28.52222, 77.572088], minZoom: 18, sub: true },
+	];
 
 	let active = $state("All");
 	let term = $state("");
@@ -141,17 +154,16 @@
 		cluster.addLayers(shown.map((p) => markers.get(p)).filter(Boolean));
 	}
 
-	// A zone's word shows only while some of its pins are on screen and the map is zoomed in
-	// enough to hold it. Zoomed out the text keeps its pixel size while the campus shrinks, so
-	// it ends up straddling the map and colliding with the cluster bubbles; 17 is where the
-	// clusters break apart and there's room. Shrinking it instead just made unreadable specks.
-	const ZONE_MIN_ZOOM = 17;
-
+	// A word shows only while some of its category's pins are on screen and the map is zoomed
+	// past its own threshold. Zoomed out the text keeps its pixel size while the campus shrinks,
+	// so it ends up straddling the map and colliding with the cluster bubbles; shrinking it with
+	// the zoom instead just made unreadable specks under those same bubbles.
 	function renderZones() {
 		if (!map) return;
-		const roomy = map.getZoom() >= ZONE_MIN_ZOOM;
-		for (const [type, label] of zones) {
-			if (roomy && shown.some((p) => p.type === type)) label.addTo(map);
+		const z = map.getZoom();
+		for (const zone of ZONES) {
+			const label = zones.get(zone.text);
+			if (z >= zone.minZoom && shown.some((p) => p.type === zone.type)) label.addTo(map);
 			else label.remove();
 		}
 	}
@@ -308,14 +320,18 @@
 				markers.set(p, m);
 			}
 
-			// District labels: one faded word per zone — see ZONES for the positions.
-			for (const [type, at] of Object.entries(ZONES)) {
+			// District and cluster labels: one faded word per zone — see ZONES for the positions.
+			for (const zone of ZONES) {
 				zones.set(
-					type,
-					L.marker(at, {
+					zone.text,
+					L.marker(zone.at, {
 						interactive: false,
 						zIndexOffset: -1000,
-						icon: L.divIcon({ className: "", html: `<div class="zone">${esc(type)}</div>`, iconSize: [0, 0] }),
+						icon: L.divIcon({
+							className: "",
+							html: `<div class="zone${zone.sub ? " sub" : ""}">${esc(zone.text)}</div>`,
+							iconSize: [0, 0],
+						}),
 					}),
 				);
 			}
@@ -564,6 +580,8 @@
 			color: #191712; opacity: 0.42;
 			text-shadow: 0 0 6px #efe7d6, 0 0 6px #efe7d6;
 		}
+		/* Cluster names sit a tier below the district names. */
+		.zone.sub { font-size: 10.5px; letter-spacing: 0.26em; opacity: 0.32; }
 		.cluster {
 			position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 			display: flex; align-items: center; gap: 3px; white-space: nowrap;
