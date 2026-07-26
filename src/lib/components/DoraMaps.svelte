@@ -104,22 +104,22 @@
 	// z17 and would collide with it, so they wait until z18, where that gap doubles.
 	// Positions are the mean of the pins named in the comment; the districts are hand-placed
 	// because an average drifts off into the fields west of the blocks.
-	const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; sub?: boolean }[] = [
+	const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; tier?: "sub" }[] = [
 		{ text: "Hostels", type: "Hostels", at: [28.524024, 77.571873], minZoom: 17 }, // Gir 3A ↔ Periyar 2C
 		{ text: "Academic Blocks", type: "Academic Blocks", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
 		// Sunderbans 1A + Chilika 1B
-		{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, sub: true },
+		{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, tier: "sub" },
 		// Kaziranga 2BX + 2B, Hemis 2A, Periyar 2C
-		{ text: "Cluster 2", type: "Hostels", at: [28.522951, 77.57325], minZoom: 18, sub: true },
+		{ text: "Cluster 2", type: "Hostels", at: [28.522951, 77.57325], minZoom: 18, tier: "sub" },
 		// Gir 3A, Dibang 3B, Kanha 3C
-		{ text: "Cluster 3", type: "Hostels", at: [28.524934, 77.571085], minZoom: 18, sub: true },
+		{ text: "Cluster 3", type: "Hostels", at: [28.524934, 77.571085], minZoom: 18, tier: "sub" },
 		// Manas 4A, Marine 4B, Mudumalai 4C
-		{ text: "Cluster 4", type: "Hostels", at: [28.523524, 77.570504], minZoom: 18, sub: true },
+		{ text: "Cluster 4", type: "Hostels", at: [28.523524, 77.570504], minZoom: 18, tier: "sub" },
 		// Betla, Bandhavgarh, Bandipur
-		{ text: "Cluster 5", type: "Hostels", at: [28.522513, 77.570188], minZoom: 18, sub: true },
+		{ text: "Cluster 5", type: "Hostels", at: [28.522513, 77.570188], minZoom: 18, tier: "sub" },
 		// Cluster 6 is the last one whose blocks all sit on a single shared coordinate, so its
 		// word is dropped 9m south of it to clear the marker parked on that point.
-		{ text: "Cluster 6", type: "Hostels", at: [28.52222, 77.572088], minZoom: 18, sub: true },
+		{ text: "Cluster 6", type: "Hostels", at: [28.52222, 77.572088], minZoom: 18, tier: "sub" },
 	];
 
 	let active = $state("All");
@@ -358,7 +358,7 @@
 						zIndexOffset: -1000,
 						icon: L.divIcon({
 							className: "",
-							html: `<div class="zone${zone.sub ? " sub" : ""}">${esc(zone.text)}</div>`,
+							html: `<div class="zone${zone.tier ? ` ${zone.tier}` : ""}">${esc(zone.text)}</div>`,
 							iconSize: [0, 0],
 						}),
 					}),
@@ -403,6 +403,11 @@
 
 <div class="dora" class:dark={theme === "dark"} class:sat={basemap === "sat"}>
 	<div id="dora-map" class="map" bind:this={mapEl}></div>
+
+	<div class="plaque">
+		<b>Shiv Nadar</b>
+		<span>Institute of Eminence</span>
+	</div>
 
 	<button class="toggle base" onclick={toggleBasemap} aria-label={basemap === "sat" ? "Switch to map view" : "Switch to satellite view"}>
 		{#if basemap === "sat"}
@@ -535,6 +540,28 @@
 	.toggle:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--shadow); }
 	.toggle:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
 	.toggle.base { top: 70px; }
+
+	/* Sits clear of the panel on desktop; pointer-events off so it never eats a map drag. */
+	.plaque {
+		position: absolute;
+		z-index: 20;
+		top: 20px;
+		left: 370px;
+		pointer-events: none;
+		display: grid;
+		gap: 3px;
+		padding: 9px 14px 10px;
+		background: var(--card);
+		color: var(--ink);
+		border: 2px solid var(--ink);
+		border-radius: 4px;
+		box-shadow: 4px 4px 0 var(--shadow);
+	}
+	.plaque b { font-weight: 800; font-size: 15px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; }
+	.plaque span {
+		font-size: 9px; font-weight: 700; line-height: 1;
+		letter-spacing: 0.17em; text-transform: uppercase; color: var(--muted);
+	}
 	.sat .toggle.base { background: var(--ink); color: var(--card); }
 
 	.panel {
@@ -591,6 +618,7 @@
 			border: none; border-top: 1px solid var(--line); border-radius: 16px 16px 0 0;
 			box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
 		}
+		.plaque { left: 20px; }
 		.drag-head { padding: 2px 18px 0; touch-action: none; cursor: grab; }
 		.grab { display: flex; justify-content: center; padding: 9px 0 3px; }
 		.grab span { width: 38px; height: 5px; border-radius: 100px; background: var(--ink); opacity: 0.25; }
