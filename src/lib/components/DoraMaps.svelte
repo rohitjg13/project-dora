@@ -31,7 +31,18 @@
 	// Voyager over light_nolabels: it actually paints greenery green and built-up areas grey.
 	// One layer for both themes — dark mode dims it with a filter and buries the surroundings
 	// under the mask, so the campus stays in colour instead of going black with everything else.
-	const TILES = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png";
+	// Esri's imagery is the one free satellite source that needs no key; it stops at z19, so
+	// maxNativeZoom lets Leaflet upscale rather than serve blanks past that.
+	const BASEMAPS = {
+		map: {
+			url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png",
+			options: { maxZoom: 20, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO" },
+		},
+		sat: {
+			url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+			options: { maxZoom: 20, maxNativeZoom: 19, attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics" },
+		},
+	};
 
 	// Campus perimeter — OSM way 369248213 ("Shiv Nadar University" / Institute of Eminence).
 	// ponytail: baked in rather than fetched from Overpass at runtime; re-pull if the campus expands.
@@ -50,12 +61,12 @@
 		{ name: "Gir 3A", type: "Hostels", lat: 28.524909011469056, lng: 77.57124548826852, desc: "Residence block — Cluster 3.", pin: [28.525263572670706, 77.57102717856306] },
 		{ name: "Dibang 3B", type: "Hostels", lat: 28.524909011469056, lng: 77.57124548826852, desc: "Residence block — Cluster 3.", pin: [28.52472682845833, 77.57080059977213] },
 		{ name: "Kanha 3C", type: "Hostels", lat: 28.524909011469056, lng: 77.57124548826852, desc: "Residence block — Cluster 3.", pin: [28.524812506121567, 77.57142584251164] },
-		{ name: "Manas 4A", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4." },
-		{ name: "Marine 4B", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4." },
-		{ name: "Mudumalai 4C", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4." },
-		{ name: "Betla", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5." },
-		{ name: "Bandhavgarh", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5." },
-		{ name: "Bandipur", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5." },
+		{ name: "Manas 4A", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523849969219675, 77.57045146895423] },
+		{ name: "Marine 4B", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523305099980835, 77.57017534750625] },
+		{ name: "Mudumalai 4C", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523416460346212, 77.57088602074118] },
+		{ name: "Betla", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522821828507006, 77.57010772512353] },
+		{ name: "Bandhavgarh", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.52240024698285, 77.57059206930278] },
+		{ name: "Bandipur", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522316725914767, 77.56986328974337] },
 		{ name: "Sariksa", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
 		{ name: "Satpura", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
 
@@ -102,16 +113,19 @@
 		{ text: "Cluster 2", type: "Hostels", at: [28.522951, 77.57325], minZoom: 18, sub: true },
 		// Gir 3A, Dibang 3B, Kanha 3C
 		{ text: "Cluster 3", type: "Hostels", at: [28.524934, 77.571085], minZoom: 18, sub: true },
-		// Clusters 4-6 share one coordinate per cluster — every block in them sits on the same
-		// point, so the word is dropped 9m south of it, near enough to read as on the pin.
-		{ text: "Cluster 4", type: "Hostels", at: [28.523733, 77.569573], minZoom: 18, sub: true },
-		{ text: "Cluster 5", type: "Hostels", at: [28.523066, 77.569267], minZoom: 18, sub: true },
+		// Manas 4A, Marine 4B, Mudumalai 4C
+		{ text: "Cluster 4", type: "Hostels", at: [28.523524, 77.570504], minZoom: 18, sub: true },
+		// Betla, Bandhavgarh, Bandipur
+		{ text: "Cluster 5", type: "Hostels", at: [28.522513, 77.570188], minZoom: 18, sub: true },
+		// Cluster 6 is the last one whose blocks all sit on a single shared coordinate, so its
+		// word is dropped 9m south of it to clear the marker parked on that point.
 		{ text: "Cluster 6", type: "Hostels", at: [28.52222, 77.572088], minZoom: 18, sub: true },
 	];
 
 	let active = $state("All");
 	let term = $state("");
 	let theme = $state<"light" | "dark">("light");
+	let basemap = $state<"map" | "sat">("map");
 
 	// Mobile bottom sheet: `sheet` is the body's live height in px (0 = peek).
 	let mobile = $state(false);
@@ -139,6 +153,7 @@
 
 	let L: any;
 	let map: any;
+	let tiles: any;
 	let cluster: any;
 	let allBounds: any;
 	let mapEl: HTMLElement;
@@ -152,6 +167,14 @@
 		if (!cluster) return;
 		cluster.clearLayers();
 		cluster.addLayers(shown.map((p) => markers.get(p)).filter(Boolean));
+	}
+
+	// Swapped rather than setUrl'd: the two sources need different attribution and zoom limits.
+	function applyBasemap() {
+		if (!map) return;
+		tiles?.remove();
+		const b = BASEMAPS[basemap];
+		tiles = L.tileLayer(b.url, b.options).addTo(map);
 	}
 
 	// A word shows only while some of its category's pins are on screen and the map is zoomed
@@ -196,6 +219,12 @@
 	function toggleTheme() {
 		theme = theme === "dark" ? "light" : "dark";
 		try { localStorage.setItem("dora-map-theme", theme); } catch {}
+	}
+
+	function toggleBasemap() {
+		basemap = basemap === "sat" ? "map" : "sat";
+		try { localStorage.setItem("dora-map-basemap", basemap); } catch {}
+		applyBasemap();
 	}
 
 	let startY = 0;
@@ -243,6 +272,8 @@
 		try {
 			const saved = localStorage.getItem("dora-map-theme");
 			if (saved === "dark" || saved === "light") theme = saved;
+			const savedBase = localStorage.getItem("dora-map-basemap");
+			if (savedBase === "sat" || savedBase === "map") basemap = savedBase;
 		} catch {}
 
 		const mq = window.matchMedia("(max-width:640px)");
@@ -278,9 +309,7 @@
 			ro.observe(mapEl);
 			requestAnimationFrame(() => map?.invalidateSize());
 			setTimeout(() => map?.invalidateSize(), 300);
-			L.tileLayer(TILES, {
-				maxZoom: 20, subdomains: "abcd", attribution: "&copy; OpenStreetMap &copy; CARTO",
-			}).addTo(map);
+			applyBasemap();
 
 			// Campus as a hole in a world-sized rectangle: dims everything off-campus so the
 			// perimeter reads as a shape instead of a dashed line floating over blank farmland.
@@ -372,8 +401,16 @@
 	});
 </script>
 
-<div class="dora" class:dark={theme === "dark"}>
+<div class="dora" class:dark={theme === "dark"} class:sat={basemap === "sat"}>
 	<div id="dora-map" class="map" bind:this={mapEl}></div>
+
+	<button class="toggle base" onclick={toggleBasemap} aria-label={basemap === "sat" ? "Switch to map view" : "Switch to satellite view"}>
+		{#if basemap === "sat"}
+			<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20V6.5Z" /><path d="M9 4v13.5M15 6.5V20" /></svg>
+		{:else}
+			<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
+		{/if}
+	</button>
 
 	<button class="toggle" onclick={toggleTheme} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
 		{#if theme === "dark"}
@@ -470,6 +507,12 @@
 	/* Dark mode: drown everything off-campus so only Shiv Nadar keeps its colour. */
 	.dark :global(.campus-mask) { fill-opacity: 0.48; }
 
+	/* Satellite: the tiles are already photographic, so no colour push, and the veil goes dark
+	   in both themes — a paper-coloured one over aerial imagery just looks like fog. */
+	.sat :global(.leaflet-tile-pane) { filter: none; }
+	.sat :global(.campus-mask) { fill: #0b0906; fill-opacity: 0.5; }
+	.sat :global(.zone) { color: #fff; opacity: 0.9; text-shadow: 0 0 5px #000, 0 0 9px #000; }
+
 	.toggle {
 		position: absolute;
 		z-index: 20;
@@ -491,6 +534,8 @@
 	}
 	.toggle:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--shadow); }
 	.toggle:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+	.toggle.base { top: 70px; }
+	.sat .toggle.base { background: var(--ink); color: var(--card); }
 
 	.panel {
 		position: absolute;
