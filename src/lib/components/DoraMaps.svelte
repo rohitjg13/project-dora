@@ -88,6 +88,14 @@
 
 	const types = ["All", ...Object.keys(COLORS).filter((t) => PLACES.some((p) => p.type === t))];
 
+	// Where each district's word sits. Placed by hand, not averaged from the pins — an average
+	// drifts into the fields west of the blocks. Only these two are districts; Food, Essentials
+	// and Healthcare are 2-3 scattered points, so a group label would land nowhere meaningful.
+	const ZONES: Record<string, [number, number]> = {
+		Hostels: [28.524024, 77.571873], // between Gir 3A and Periyar 2C
+		"Academic Blocks": [28.525966, 77.576309], // over the A-D building mass
+	};
+
 	let active = $state("All");
 	let term = $state("");
 	let theme = $state<"light" | "dark">("light");
@@ -125,11 +133,21 @@
 	let panelEl: HTMLElement;
 	const PANEL_W = 360;
 	const markers = new Map<Place, any>();
+	const zones = new Map<string, any>();
 
 	function renderMarkers() {
 		if (!cluster) return;
 		cluster.clearLayers();
 		cluster.addLayers(shown.map((p) => markers.get(p)).filter(Boolean));
+	}
+
+	// A zone's word only makes sense while some of its pins are on screen.
+	function renderZones() {
+		if (!map) return;
+		for (const [type, label] of zones) {
+			if (shown.some((p) => p.type === type)) label.addTo(map);
+			else label.remove();
+		}
 	}
 
 	function animatePanelHeight() {
@@ -283,6 +301,19 @@
 				markers.set(p, m);
 			}
 
+			// District labels: one faded word per zone — see ZONES for the positions.
+			for (const [type, at] of Object.entries(ZONES)) {
+				zones.set(
+					type,
+					L.marker(at, {
+						interactive: false,
+						zIndexOffset: -1000,
+						icon: L.divIcon({ className: "", html: `<div class="zone">${esc(type)}</div>`, iconSize: [0, 0] }),
+					}),
+				);
+			}
+			renderZones();
+
 			allBounds = L.featureGroup([...markers.values()]).getBounds();
 			map.fitBounds(
 				allBounds,
@@ -306,6 +337,7 @@
 	$effect(() => {
 		shown;
 		renderMarkers();
+		renderZones();
 	});
 
 	$effect(() => {
@@ -516,6 +548,15 @@
 		.pin { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--shadow); transition: transform 0.12s; }
 		.pin svg { width: 14px; height: 14px; }
 		.pin:hover { transform: translate(-1px, -1px); }
+		.zone {
+			position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+			white-space: nowrap; pointer-events: none;
+			font-family: Arial, Helvetica, sans-serif; font-weight: 800; font-size: 13px;
+			letter-spacing: 0.34em; text-transform: uppercase;
+			/* Not themed: these always sit on the campus tiles, which stay light in dark mode too. */
+			color: #191712; opacity: 0.42;
+			text-shadow: 0 0 6px #efe7d6, 0 0 6px #efe7d6;
+		}
 		.cluster {
 			position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 			display: flex; align-items: center; gap: 3px; white-space: nowrap;
