@@ -465,7 +465,15 @@
 					<div class="empty">Nothing matches "{term}".</div>
 				{/each}
 			</div>
-			<div class="foot">{shown.length} place{shown.length === 1 ? "" : "s"}</div>
+		</div>
+		<!-- Outside .body: that collapses to nothing in the mobile peek state, and the credit
+		     should stay put whether or not the sheet is open. -->
+		<div class="foot">
+			<span>{shown.length} place{shown.length === 1 ? "" : "s"}</span>
+			<a class="by" href="https://github.com/rohitjg13" target="_blank" rel="noopener">
+				<img src="https://github.com/rohitjg13.png?size=40" alt="" width="18" height="18" loading="lazy" />
+				Built &amp; maintained by <b>Rohit J G</b>
+			</a>
 		</div>
 	</aside>
 </div>
@@ -609,7 +617,15 @@
 	.item .t { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-top: 2px; }
 	.item .arw { margin-left: auto; flex: none; color: var(--muted); transition: 0.15s; }
 	.item:hover .arw { transform: translateX(3px); }
-	.foot { padding: 10px 15px; border-top: 1px solid var(--line); font-size: 11px; letter-spacing: 0.03em; color: var(--muted); }
+	.foot {
+		display: flex; align-items: center; justify-content: space-between; gap: 4px 10px; flex-wrap: wrap;
+		padding: 9px 15px; border-top: 1px solid var(--line);
+		font-size: 11px; letter-spacing: 0.03em; color: var(--muted);
+	}
+	.by { display: inline-flex; align-items: center; gap: 6px; color: inherit; text-decoration: none; }
+	.by img { border-radius: 50%; border: 1.5px solid var(--line); flex: none; }
+	.by b { font-weight: 700; color: var(--ink); }
+	.by:hover b { color: var(--accent); }
 	.empty { text-align: center; color: var(--muted); padding: 34px 12px; font-size: 14px; }
 
 	@media (max-width: 640px) {
@@ -629,6 +645,8 @@
 		.chips::-webkit-scrollbar { display: none; }
 		.chip { flex: none; }
 		.body { max-height: 0; overflow: hidden; border-top: 1px solid var(--line); }
+		/* Now the bottom-most thing on screen, so keep it off the home indicator. */
+		.foot { padding-bottom: max(9px, env(safe-area-inset-bottom)); }
 		:global(.leaflet-control-zoom) { display: none; }
 	}
 
