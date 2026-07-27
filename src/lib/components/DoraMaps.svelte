@@ -163,6 +163,19 @@
 	const markers = new Map<Place, any>();
 	const zones = new Map<string, any>();
 
+	// How far off the grounds you can drag. Set per axis rather than with bounds.pad(), which
+	// takes a fraction of each side — the campus is half again as tall as it is wide, so one
+	// fraction that frees up the sideways drag lets it slide clean off the top. Roughly 5km
+	// west, 3km east and 2.7km either way vertically, which is loose enough that the campus
+	// can leave the view entirely at the opening zoom. Shrink these to keep it always on screen.
+	const campusLeash = (L: any) => {
+		const b = L.latLngBounds(CAMPUS_BOUNDARY);
+		return L.latLngBounds(
+			[b.getSouth() - 0.024, b.getWest() - 0.052],
+			[b.getNorth() + 0.024, b.getEast() + 0.032],
+		);
+	};
+
 	function renderMarkers() {
 		if (!cluster) return;
 		cluster.clearLayers();
@@ -298,7 +311,16 @@
 			L = (leaflet as any).default ?? leaflet;
 			await import("leaflet.markercluster");
 
-			map = L.map(mapEl, { zoomControl: false, attributionControl: true }).setView(CAMPUS, 16);
+			// Leashed to the campus: you cannot zoom out past the grounds filling the screen, and
+			// panning stops at a padded box around them. Without this the map opens onto empty
+			// farmland the moment anyone scrolls out, which is nobody's use for a campus map.
+			map = L.map(mapEl, {
+				zoomControl: false,
+				attributionControl: true,
+				minZoom: 15,
+				maxBounds: campusLeash(L),
+				maxBoundsViscosity: 1,
+			}).setView(CAMPUS, 16);
 			L.control.zoom({ position: "bottomright" }).addTo(map);
 			map.on("zoomend", renderZones);
 
