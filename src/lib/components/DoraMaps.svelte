@@ -16,6 +16,9 @@
 		Food: "#f2960b",
 		Healthcare: "#e8311c",
 		"Dining Hall": "#9d2fd1",
+		Sports: "#2f9e44",
+		Landmarks: "#b8860b",
+		"Green Places": "#0f766e",
 	};
 
 	// Category → SVG icon (inner markup, drawn as a white stroke on the pin)
@@ -26,6 +29,9 @@
 		Food: `<path d="M4 8h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M16 9h2.5a2 2 0 0 1 0 4H16"/><path d="M6 3v2M10 3v2"/>`,
 		Healthcare: `<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6V4Z"/>`,
 		"Dining Hall": `<path d="M3.5 15a8.5 8.5 0 0 1 17 0"/><path d="M2 15h20"/><path d="M12 6.5V4"/>`,
+		Sports: `<circle cx="12" cy="12" r="7.5"/><path d="M8 9c2 2 6 2 8 0M8 15c2-2 6-2 8 0"/>`,
+		Landmarks: `<path d="M4 21h16"/><path d="M6 21V10l6-6 6 6v11"/><path d="M10 21v-6h4v6"/>`,
+		"Green Places": `<path d="M12 21v-7"/><path d="M12 14C7 14 5 10.5 5 6.5 9.5 6.5 12 9 12 14Z"/><path d="M12 14c5 0 7-3.5 7-7.5-4.5 0-7 2.5-7 7.5Z"/>`,
 	};
 	const CAMPUS: [number, number] = [28.525, 77.5735];
 	// Voyager over light_nolabels: it actually paints greenery green and built-up areas grey.
@@ -170,7 +176,7 @@
 		// ---- Food ----
 		{ name: "CnD", type: "Food", lat: 28.525532569695205, lng: 77.57606053056581, desc: "Food area by the academic blocks — Naveen's Tea Stall, A1 Rama, Surya Food & Beverages and Kathi Roll." },
 		{ name: "AnB", type: "Food", lat: 28.52684760999203, lng: 77.57661486088946, desc: "Food area by the academic blocks — Anna's Cafe and Quench Cafe." },
-		{ name: "SARC", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "Student Activity and Recreation Center food court." },
+		{ name: "Food Court", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "SARC food court.", pin: [28.5235029457023, 77.57431365881327] },
 
 		// ---- Healthcare ----
 		{ name: "Pharmacy", type: "Healthcare", lat: 28.527623306472037, lng: 77.57252178901619, desc: "On-campus medical store." },
@@ -180,6 +186,33 @@
 		{ name: "DH 1", type: "Dining Hall", lat: 28.523743009456627, lng: 77.57351714174683, desc: "Dining hall — breakfast, lunch, dinner (à la carte) and evening snacks." },
 		{ name: "DH 2", type: "Dining Hall", lat: 28.52443195826298, lng: 77.57045969354294, desc: "Dining hall — breakfast, lunch and dinner." },
 		{ name: "DH 3", type: "Dining Hall", lat: 28.52325058063192, lng: 77.56961081535562, desc: "Dining hall — breakfast, lunch and dinner." },
+
+		// ---- Sports ----
+		{ name: "Football Ground", type: "Sports", lat: 28.52316643388451, lng: 77.57187680123806, desc: "Campus football ground." },
+		{ name: "Cricket Ground", type: "Sports", lat: 28.52607450417634, lng: 77.57299260015508, desc: "Campus cricket ground." },
+		{ name: "Basketball Court", type: "Sports", lat: 28.5242481413347, lng: 77.57107397227831, desc: "Outdoor basketball court." },
+		{ name: "Tennis Courts", type: "Sports", lat: 28.52404271923589, lng: 77.57154594853493, desc: "Outdoor tennis courts." },
+		{ name: "Volleyball Court", type: "Sports", lat: 28.524465087703316, lng: 77.57175103646816, desc: "Outdoor volleyball court." },
+		{ name: "Squash Courts", type: "Sports", lat: 28.521531763065504, lng: 77.57101883869687, desc: "Indoor squash courts.", pin: [28.52121928280334, 77.57107082497329] },
+		{ name: "Golf Course", type: "Sports", lat: 28.528645003163167, lng: 77.57248045888485, desc: "Campus golf course." },
+		{ name: "Amphitheatre", type: "Sports", lat: 28.524011527748257, lng: 77.57419125589189, desc: "Open-air amphitheatre for events." },
+		{ name: "ISC", type: "Sports", lat: 28.521531763065504, lng: 77.57101883869687, desc: "Indoor Sports Complex." },
+
+		// ---- Landmarks ----
+		{ name: "Tower 6", type: "Hostels", lat: 28.52940433181576, lng: 77.57917039022865, desc: "Residence tower." },
+		{ name: "Tower 9", type: "Hostels", lat: 28.528214700714408, lng: 77.57789070602227, desc: "Residence tower." },
+		{ name: "Central Library", type: "Landmarks", lat: 28.52499331991966, lng: 77.5750053021127, desc: "Campus library.", pin: [28.525002335830255, 77.57432485701858] },
+		{ name: "Main Gate", type: "Landmarks", lat: 28.53338591783809, lng: 77.57636217724819, desc: "Gate 1." },
+		{ name: "India Post", type: "Landmarks", lat: 28.532668950331285, lng: 77.57617351175107, desc: "Post office." },
+		{ name: "SARC/UAC", type: "Landmarks", lat: 28.523940597071064, lng: 77.57442274811383, desc: "Students Activity and Recreational Center", pin: [28.52359967722649, 77.5747850553129] },
+
+		// ---- Food ----
+		{ name: "Grub Square", type: "Food", lat: 28.526510432142956, lng: 77.57382566407763, desc: "Campus food outlet.", pin: [28.52667979488469, 77.57387768011228] },
+
+		// ---- Green Places ----
+		{ name: "SNU Biodiversity Park", type: "Green Places", lat: 28.521264875431715, lng: 77.5756026064942, desc: "Campus biodiversity park.", pin: [28.52114856955627, 77.57588802988606] },
+		{ name: "Lake SNU", type: "Green Places", lat: 28.525509504060498, lng: 77.57686470924014, desc: "Campus lake.", pin: [28.525092276417517, 77.5778472079545] },
+		{ name: "19th Hole", type: "Green Places", lat: 28.529893126665147, lng: 77.57461048873282, desc: "Green space by the golf course.", pin: [28.529893126665147, 77.57461048873282] },
 	];
 
 	const types = ["All", ...Object.keys(COLORS).filter((t) => PLACES.some((p) => p.type === t))];
@@ -190,7 +223,7 @@
 	// Positions are the mean of the pins named in the comment; the districts are hand-placed
 	// because an average drifts off into the fields west of the blocks.
 	const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; tier?: "sub" }[] = [
-		{ text: "Hostels", type: "Hostels", at: [28.524024, 77.571873], minZoom: 17 }, // Gir 3A ↔ Periyar 2C
+		{ text: "Residential", type: "Hostels", at: [28.524024, 77.571873], minZoom: 17 }, // Gir 3A ↔ Periyar 2C
 		{ text: "Academic Blocks", type: "Academic Blocks", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
 		// Sunderbans 1A + Chilika 1B
 		{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, tier: "sub" },
