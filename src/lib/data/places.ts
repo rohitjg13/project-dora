@@ -17,20 +17,23 @@ export const PLACES: Place[] = [
 	{ name: "Manas 4A", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523849969219675, 77.57045146895423] },
 	{ name: "Marine 4B", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523305099980835, 77.57017534750625] },
 	{ name: "Mudumalai 4C", type: "Hostels", lat: 28.523813554362306, lng: 77.56957343378393, desc: "Residence block — Cluster 4.", pin: [28.523416460346212, 77.57088602074118] },
-	{ name: "Betla", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522821828507006, 77.57010772512353] },
-	{ name: "Bandhavgarh", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.52240024698285, 77.57059206930278] },
-	{ name: "Bandipur", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522316725914767, 77.56986328974337] },
-	{ name: "Sariksa", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
-	{ name: "Satpura", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
+	{ name: "Betla 5A", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522821828507006, 77.57010772512353] },
+	{ name: "Bandhavgarh 5C", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.52240024698285, 77.57059206930278] },
+	{ name: "Bandipur 5B", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522316725914767, 77.56986328974337] },
+	{ name: "Sariksa 6A", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
+	{ name: "Satpura 6B", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
 	{ name: "Tower 6", type: "Hostels", lat: 28.52940433181576, lng: 77.57917039022865, desc: "Residence tower." },
 	{ name: "Tower 9", type: "Hostels", lat: 28.528214700714408, lng: 77.57789070602227, desc: "Residence tower." },
 
-	// ---- Academic Blocks ----
-	{ name: "A Block", type: "Academic Blocks", lat: 28.52708891065959, lng: 77.57693041797647, desc: "Lecture halls, labs and faculty offices." },
-	{ name: "B Block", type: "Academic Blocks", lat: 28.52675007233592, lng: 77.57607144744297, desc: "Lecture halls, labs and faculty offices." },
-	{ name: "C Block", type: "Academic Blocks", lat: 28.526292036291554, lng: 77.57549031781652, desc: "Lecture halls, labs and faculty offices." },
-	{ name: "D Block", type: "Academic Blocks", lat: 28.525540623117408, lng: 77.57510651447218, desc: "Lecture halls, labs and faculty offices." },
-	{ name: "G Block", type: "Academic Blocks", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block and auditorium." },
+	// ---- Academics ----
+	{ name: "A Block", type: "Academics", lat: 28.52708891065959, lng: 77.57693041797647, desc: "Lecture halls, labs and faculty offices." },
+	{ name: "B Block", type: "Academics", lat: 28.52675007233592, lng: 77.57607144744297, desc: "Lecture halls, labs and faculty offices." },
+	{ name: "C Block", type: "Academics", lat: 28.526292036291554, lng: 77.57549031781652, desc: "Lecture halls, labs and faculty offices." },
+	{ name: "D Block", type: "Academics", lat: 28.525540623117408, lng: 77.57510651447218, desc: "Lecture halls, labs and faculty offices." },
+	{ name: "F Block", type: "Academics", lat: 28.526752435633973, lng: 77.57337329149348, desc: "" },
+	{ name: "G Block", type: "Academics", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block and auditorium." },
+	{ name: "R Block", type: "Academics", lat: 28.52742597909198, lng: 77.57825882679933, desc: "Research Block" },
+	{ name: "Central Library", type: "Academics", lat: 28.52499331991966, lng: 77.5750053021127, desc: "Campus library.", pin: [28.525002335830255, 77.57432485701858] },
 
 	// ---- Essentials ----
 	{ name: "Shopping Arcade", type: "Essentials", lat: 28.527623306472037, lng: 77.57252178901619, desc: "Campus shopping complex with a stationery store, Grabbo supermarket and pharmacy." },
@@ -40,8 +43,9 @@ export const PLACES: Place[] = [
 	// ---- Food ----
 	{ name: "CnD", type: "Food", lat: 28.525532569695205, lng: 77.57606053056581, desc: "Food area by the academic blocks — Naveen's Tea Stall, A1 Rama, Surya Food & Beverages and Kathi Roll." },
 	{ name: "AnB", type: "Food", lat: 28.52684760999203, lng: 77.57661486088946, desc: "Food area by the academic blocks — Anna's Cafe and Quench Cafe." },
-	{ name: "Food Court", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "SARC food court.", pin: [28.5235029457023, 77.57431365881327] },
+	{ name: "SARC Food Court", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "SARC food court.", pin: [28.5235029457023, 77.57431365881327] },
 	{ name: "Grub Square", type: "Food", lat: 28.5280414, lng: 77.5741518, desc: "Campus food outlet." },
+	{ name: "Nescafe", type: "Food", lat: 28.52499331991966, lng: 77.5750053021127, desc: "", pin: [28.5247832205253, 77.57448159389483] },
 
 	// ---- Healthcare ----
 	{ name: "Pharmacy", type: "Healthcare", lat: 28.527623306472037, lng: 77.57252178901619, desc: "On-campus medical store." },
@@ -58,21 +62,25 @@ export const PLACES: Place[] = [
 	{ name: "Basketball Court", type: "Sports", lat: 28.5242481413347, lng: 77.57107397227831, desc: "Outdoor basketball court." },
 	{ name: "Tennis Courts", type: "Sports", lat: 28.52404271923589, lng: 77.57154594853493, desc: "Outdoor tennis courts." },
 	{ name: "Volleyball Court", type: "Sports", lat: 28.524465087703316, lng: 77.57175103646816, desc: "Outdoor volleyball court." },
+	{ name: "Badminton Court", type: "Sports", lat: 28.52516771876231, lng: 77.57207730891686, desc: "" },
 	{ name: "Squash Courts", type: "Sports", lat: 28.521531763065504, lng: 77.57101883869687, desc: "Indoor squash courts.", pin: [28.52121928280334, 77.57107082497329] },
 	{ name: "Golf Course", type: "Sports", lat: 28.528645003163167, lng: 77.57248045888485, desc: "Campus golf course." },
 	{ name: "Amphitheatre", type: "Sports", lat: 28.524011527748257, lng: 77.57419125589189, desc: "Open-air amphitheatre for events." },
 	{ name: "ISC", type: "Sports", lat: 28.521531763065504, lng: 77.57101883869687, desc: "Indoor Sports Complex." },
+	{ name: "Gym", type: "Sports", lat: 28.521531763065504, lng: 77.57101883869687, desc: "", pin: [28.52124319510592, 77.57066418065789] },
+	{ name: "Box Cricket", type: "Sports", lat: 28.526820262494542, lng: 77.57440532445662, desc: "Box cricket ground." },
 
 	// ---- Landmarks ----
-	{ name: "Central Library", type: "Landmarks", lat: 28.52499331991966, lng: 77.5750053021127, desc: "Campus library.", pin: [28.525002335830255, 77.57432485701858] },
-	{ name: "Main Gate", type: "Landmarks", lat: 28.53338591783809, lng: 77.57636217724819, desc: "Gate 1." },
+	{ name: "Gate 1 (Main Gate)", type: "Landmarks", lat: 28.53338591783809, lng: 77.57636217724819, desc: "" },
 	{ name: "India Post", type: "Landmarks", lat: 28.532668950331285, lng: 77.57617351175107, desc: "Post office." },
-	{ name: "SARC/UAC", type: "Landmarks", lat: 28.523940597071064, lng: 77.57442274811383, desc: "Students Activity and Recreational Center", pin: [28.52359967722649, 77.5747850553129] },
+	{ name: "UAC", type: "Landmarks", lat: 28.523940597071064, lng: 77.57442274811383, desc: "Students Activity and Recreational Center", pin: [28.52359967722649, 77.5747850553129] },
+	{ name: "Chess Garden", type: "Landmarks", lat: 28.523888161274463, lng: 77.57212280668023, desc: "" },
+	{ name: "Parking 1", type: "Landmarks", lat: 28.524578126765554, lng: 77.57381131354778, desc: "" },
+	{ name: "Inner Gate", type: "Landmarks", lat: 28.525514137061528, lng: 77.57166094490309, desc: "" },
 
 	// ---- Green Places ----
 	{ name: "SNU Biodiversity Park", type: "Green Places", lat: 28.521264875431715, lng: 77.5756026064942, desc: "Campus biodiversity park.", pin: [28.52114856955627, 77.57588802988606] },
 	{ name: "Lake SNU", type: "Green Places", lat: 28.525509504060498, lng: 77.57686470924014, desc: "Campus lake.", pin: [28.525092276417517, 77.5778472079545] },
-	{ name: "19th Hole", type: "Green Places", lat: 28.529893126665147, lng: 77.57461048873282, desc: "Green space by the golf course.", pin: [28.529893126665147, 77.57461048873282] },
 ];
 
 // Words laid over the map. `type` is only used to hide a word when its category is filtered
@@ -82,7 +90,7 @@ export const PLACES: Place[] = [
 // because an average drifts off into the fields west of the blocks.
 export const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; tier?: "sub" }[] = [
 	{ text: "Residential", type: "Hostels", at: [28.524024, 77.571873], minZoom: 17 }, // Gir 3A ↔ Periyar 2C
-	{ text: "Academic Blocks", type: "Academic Blocks", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
+	{ text: "Academics", type: "Academics", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
 	// Sunderbans 1A + Chilika 1B
 	{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, tier: "sub" },
 	// Kaziranga 2BX + 2B, Hemis 2A, Periyar 2C

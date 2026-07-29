@@ -7,7 +7,7 @@
 	// Category → pin colour (muted, editorial palette)
 	const COLORS: Record<string, string> = {
 		Hostels: "#2f5fd8",
-		"Academic Blocks": "#d21f4b",
+		"Academics": "#d21f4b",
 		Essentials: "#0ea5c4",
 		Food: "#f2960b",
 		Healthcare: "#e8311c",
@@ -20,7 +20,7 @@
 	// Category → SVG icon (inner markup, drawn as a white stroke on the pin)
 	const ICONS: Record<string, string> = {
 		Hostels: `<path d="M3 10.8 12 4l9 6.8"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/>`,
-		"Academic Blocks": `<path d="M12 4 2 9l10 5 10-5-10-5Z"/><path d="M6 11.5V17c0 1.2 2.7 2.5 6 2.5s6-1.3 6-2.5v-5.5"/>`,
+		"Academics": `<path d="M12 4 2 9l10 5 10-5-10-5Z"/><path d="M6 11.5V17c0 1.2 2.7 2.5 6 2.5s6-1.3 6-2.5v-5.5"/>`,
 		Essentials: `<path d="M6.5 8h11l-1 11.5h-9L6.5 8Z"/><path d="M9 8a3 3 0 0 1 6 0"/>`,
 		Food: `<path d="M4 8h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M16 9h2.5a2 2 0 0 1 0 4H16"/><path d="M6 3v2M10 3v2"/>`,
 		Healthcare: `<path d="M10 4h4v6h6v4h-6v6h-4v-6H4v-4h6V4Z"/>`,
