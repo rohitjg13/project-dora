@@ -143,6 +143,7 @@
 	let term = $state("");
 	let theme = $state<"light" | "dark">("light");
 	let basemap = $state<"map" | "sat">("map");
+	let showSatHint = $state(false);
 
 	// Mobile bottom sheet: `sheet` is the body's live height in px (0 = peek).
 	let mobile = $state(false);
@@ -260,6 +261,13 @@
 		basemap = basemap === "sat" ? "map" : "sat";
 		try { localStorage.setItem("dora-map-basemap", basemap); } catch {}
 		applyBasemap();
+		dismissSatHint();
+	}
+
+	function dismissSatHint() {
+		if (!showSatHint) return;
+		showSatHint = false;
+		try { localStorage.setItem("dora-map-sat-hint-seen", "1"); } catch {}
 	}
 
 	let startY = 0;
@@ -309,6 +317,10 @@
 			if (saved === "dark" || saved === "light") theme = saved;
 			const savedBase = localStorage.getItem("dora-map-basemap");
 			if (savedBase === "sat" || savedBase === "map") basemap = savedBase;
+			if (!localStorage.getItem("dora-map-sat-hint-seen")) {
+				showSatHint = true;
+				setTimeout(dismissSatHint, 5000);
+			}
 		} catch {}
 
 		const mq = window.matchMedia("(max-width:640px)");
@@ -464,6 +476,9 @@
 			<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
 		{/if}
 	</button>
+	{#if showSatHint}
+		<div class="sat-hint">Try satellite view</div>
+	{/if}
 
 	<button class="toggle" onclick={toggleTheme} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
 		{#if theme === "dark"}
@@ -617,6 +632,38 @@
 	.toggle:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--shadow); }
 	.toggle:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
 	.toggle.base { top: 70px; }
+
+	.sat-hint {
+		position: absolute;
+		z-index: 20;
+		top: 78px;
+		right: 68px;
+		max-width: 140px;
+		padding: 6px 10px;
+		background: var(--ink);
+		color: var(--card);
+		font-size: 12px;
+		font-weight: 600;
+		line-height: 1.3;
+		border-radius: 4px;
+		box-shadow: 3px 3px 0 var(--shadow);
+		pointer-events: none;
+		animation: sat-hint-in 0.2s ease-out;
+	}
+	.sat-hint::after {
+		content: "";
+		position: absolute;
+		top: 8px;
+		right: -5px;
+		width: 8px;
+		height: 8px;
+		background: var(--ink);
+		transform: rotate(45deg);
+	}
+	@keyframes sat-hint-in {
+		from { opacity: 0; transform: translateX(6px); }
+		to { opacity: 1; transform: translateX(0); }
+	}
 
 	/* Sits clear of the panel on desktop; pointer-events off so it never eats a map drag. */
 	.plaque {
