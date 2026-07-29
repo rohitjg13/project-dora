@@ -459,11 +459,9 @@
 
 	<button class="toggle base" onclick={toggleBasemap} aria-label={basemap === "sat" ? "Switch to map view" : "Switch to satellite view"}>
 		{#if basemap === "sat"}
-			<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20V6.5Z" /><path d="M9 4v13.5M15 6.5V20" /></svg>
-			<span>Map</span>
+			<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20V6.5Z" /><path d="M9 4v13.5M15 6.5V20" /></svg>
 		{:else}
-			<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
-			<span>Sat</span>
+			<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
 		{/if}
 	</button>
 
@@ -618,7 +616,7 @@
 	}
 	.toggle:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--shadow); }
 	.toggle:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
-	.toggle.base { top: 70px; width: auto; padding: 0 12px; gap: 6px; font: 700 12px/1 inherit; letter-spacing: 0.02em; }
+	.toggle.base { top: 70px; }
 
 	/* Sits clear of the panel on desktop; pointer-events off so it never eats a map drag. */
 	.plaque {
