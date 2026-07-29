@@ -42,10 +42,10 @@ export const PLACES: Place[] = [
 
 	// ---- Food ----
 	{ name: "CnD", type: "Food", lat: 28.525532569695205, lng: 77.57606053056581, desc: "Food area by the academic blocks — Naveen's Tea Stall, A1 Rama, Surya Food & Beverages and Kathi Roll." },
-	{ name: "AnB", type: "Food", lat: 28.52684760999203, lng: 77.57661486088946, desc: "Food area by the academic blocks — Anna's Cafe and Quench Cafe." },
+	{ name: "AnB", type: "Food", lat: 28.52684760999203, lng: 77.57661486088946, desc: "Food area by the academic blocks — Anna's Cafe and Quench Cafe.", pin: [28.526249602667335, 77.57685248690116] },
 	{ name: "SARC Food Court", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "SARC food court.", pin: [28.5235029457023, 77.57431365881327] },
 	{ name: "Grub Square", type: "Food", lat: 28.5280414, lng: 77.5741518, desc: "Campus food outlet." },
-	{ name: "Nescafe", type: "Food", lat: 28.52499331991966, lng: 77.5750053021127, desc: "", pin: [28.5247832205253, 77.57448159389483] },
+	{ name: "Nescafe", type: "Food", lat: 28.52499331991966, lng: 77.5750053021127, desc: "", pin: [28.52484267617783, 77.57448232258167] },
 
 	// ---- Healthcare ----
 	{ name: "Pharmacy", type: "Healthcare", lat: 28.527623306472037, lng: 77.57252178901619, desc: "On-campus medical store." },
