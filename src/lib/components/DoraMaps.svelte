@@ -319,7 +319,7 @@
 			if (savedBase === "sat" || savedBase === "map") basemap = savedBase;
 			if (!localStorage.getItem("dora-map-sat-hint-seen")) {
 				showSatHint = true;
-				setTimeout(dismissSatHint, 5000);
+				setTimeout(dismissSatHint, 9000);
 			}
 		} catch {}
 
