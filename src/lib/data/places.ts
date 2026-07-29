@@ -41,7 +41,7 @@ export const PLACES: Place[] = [
 	{ name: "CnD", type: "Food", lat: 28.525532569695205, lng: 77.57606053056581, desc: "Food area by the academic blocks — Naveen's Tea Stall, A1 Rama, Surya Food & Beverages and Kathi Roll." },
 	{ name: "AnB", type: "Food", lat: 28.52684760999203, lng: 77.57661486088946, desc: "Food area by the academic blocks — Anna's Cafe and Quench Cafe." },
 	{ name: "Food Court", type: "Food", lat: 28.523940597071064, lng: 77.57442274811383, desc: "SARC food court.", pin: [28.5235029457023, 77.57431365881327] },
-	{ name: "Grub Square", type: "Food", lat: 28.526510432142956, lng: 77.57382566407763, desc: "Campus food outlet.", pin: [28.52667979488469, 77.57387768011228] },
+	{ name: "Grub Square", type: "Food", lat: 28.5280414, lng: 77.5741518, desc: "Campus food outlet." },
 
 	// ---- Healthcare ----
 	{ name: "Pharmacy", type: "Healthcare", lat: 28.527623306472037, lng: 77.57252178901619, desc: "On-campus medical store." },
