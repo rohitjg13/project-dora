@@ -175,6 +175,7 @@
 	let map: any;
 	let tiles: any;
 	let roads: any;
+	let buildings: any;
 	let cluster: any;
 	let allBounds: any;
 	let mapEl: HTMLElement;
@@ -204,15 +205,18 @@
 	}
 
 	// Swapped rather than setUrl'd: the two sources need different attribution and zoom limits.
-	// The road overlay rides along: it exists to give the flat basemap the sense of layout you
-	// otherwise only get from imagery, so it would just be clutter on top of the imagery itself.
+	// The road and building overlays ride along: both exist to give the flat basemap the sense of
+	// place you otherwise only get from imagery, so on the imagery itself they are just paint over
+	// buildings you can already see.
 	function applyBasemap() {
 		if (!map) return;
 		tiles?.remove();
 		const b = BASEMAPS[basemap];
 		tiles = L.tileLayer(b.url, b.options).addTo(map);
-		if (basemap === "sat") roads?.remove();
-		else roads?.addTo(map);
+		for (const layer of [roads, buildings]) {
+			if (basemap === "sat") layer?.remove();
+			else layer?.addTo(map);
+		}
 	}
 
 	// A word shows only while some of its category's pins are on screen and the map is zoomed
@@ -371,22 +375,10 @@
 			roads = L.layerGroup(
 				ROADS.map((r) => L.polyline(r, { className: "road", weight: 3, interactive: false })),
 			);
-			applyBasemap(); // adds the roads too, unless we opened on satellite
-
-			// Campus as a hole in a world-sized rectangle: dims everything off-campus so the
-			// perimeter reads as a shape instead of a dashed line floating over blank farmland.
-			L.polygon([[[-89, -179], [-89, 179], [89, 179], [89, -179]], CAMPUS_BOUNDARY], {
-				className: "campus-mask", stroke: false, fillOpacity: 0.62, interactive: false,
-			}).addTo(map);
-			L.polygon(CAMPUS_BOUNDARY, {
-				className: "campus-edge", weight: 2.5, dashArray: "7 5", fill: false, interactive: false,
-			}).addTo(map);
-
 			// Buildings painted in their category's pin colour, so a block reads as a hostel or a
-			// lecture block before you've looked at a single marker. Added after the mask so it
-			// paints over it, and left out of the category filter on purpose — dropping the
-			// unselected ones leaves holes where buildings visibly are.
-			L.layerGroup(
+			// lecture block before you've looked at a single marker. Left out of the category filter
+			// on purpose — dropping the unselected ones leaves holes where buildings visibly are.
+			buildings = L.layerGroup(
 				BUILDINGS.map((b) =>
 					L.polygon(b.ring, {
 						className: "bldg",
@@ -398,7 +390,17 @@
 						fillOpacity: 0.45,
 					}),
 				),
-			).addTo(map);
+			);
+			applyBasemap(); // adds the roads and buildings too, unless we opened on satellite
+
+			// Campus as a hole in a world-sized rectangle: dims everything off-campus so the
+			// perimeter reads as a shape instead of a dashed line floating over blank farmland.
+			L.polygon([[[-89, -179], [-89, 179], [89, 179], [89, -179]], CAMPUS_BOUNDARY], {
+				className: "campus-mask", stroke: false, fillOpacity: 0.62, interactive: false,
+			}).addTo(map);
+			L.polygon(CAMPUS_BOUNDARY, {
+				className: "campus-edge", weight: 2.5, dashArray: "7 5", fill: false, interactive: false,
+			}).addTo(map);
 
 			cluster = L.markerClusterGroup({
 				showCoverageOnHover: false, maxClusterRadius: 45, spiderfyDistanceMultiplier: 1.6,
