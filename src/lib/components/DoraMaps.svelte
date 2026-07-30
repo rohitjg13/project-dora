@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import "leaflet/dist/leaflet.css";
 	import "leaflet.markercluster/dist/MarkerCluster.css";
-	import { type Place, PLACES, ZONES } from "$lib/data/places";
+	import { type Place, PLACES, ZONES, BUILDINGS } from "$lib/data/places";
 
 	// Category → pin colour (muted, editorial palette)
 	const COLORS: Record<string, string> = {
@@ -16,6 +16,8 @@
 		Landmarks: "#b8860b",
 		"Green Places": "#0f766e",
 	};
+	// Buildings OSM tags but doesn't categorise — drawn, but kept quiet.
+	const NEUTRAL_BLDG = "#8a8168";
 
 	// Category → SVG icon (inner markup, drawn as a white stroke on the pin)
 	const ICONS: Record<string, string> = {
@@ -379,6 +381,24 @@
 			L.polygon(CAMPUS_BOUNDARY, {
 				className: "campus-edge", weight: 2.5, dashArray: "7 5", fill: false, interactive: false,
 			}).addTo(map);
+
+			// Buildings painted in their category's pin colour, so a block reads as a hostel or a
+			// lecture block before you've looked at a single marker. Added after the mask so it
+			// paints over it, and left out of the category filter on purpose — dropping the
+			// unselected ones leaves holes where buildings visibly are.
+			L.layerGroup(
+				BUILDINGS.map((b) =>
+					L.polygon(b.ring, {
+						className: "bldg",
+						interactive: false,
+						color: COLORS[b.type] ?? NEUTRAL_BLDG,
+						fillColor: COLORS[b.type] ?? NEUTRAL_BLDG,
+						weight: 1,
+						opacity: 0.9,
+						fillOpacity: 0.45,
+					}),
+				),
+			).addTo(map);
 
 			cluster = L.markerClusterGroup({
 				showCoverageOnHover: false, maxClusterRadius: 45, spiderfyDistanceMultiplier: 1.6,
