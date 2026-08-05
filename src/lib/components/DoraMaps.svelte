@@ -145,6 +145,7 @@
 	let term = $state("");
 	let theme = $state<"light" | "dark">("light");
 	let basemap = $state<"map" | "sat">("map");
+	let zoom = $state(16);
 	let showSatHint = $state(false);
 
 	// Mobile bottom sheet: `sheet` is the body's live height in px (0 = peek).
@@ -157,14 +158,19 @@
 	const openSheet = () => { if (mobile) { sheet = openHeight(); frameCampus(); } };
 	const closeSheet = () => { sheet = 0; };
 
+	const q = $derived(term.trim().toLowerCase());
+	// Search the description and the `inside` list too, so what's housed in a building (G Block's
+	// CDC, admin office, AI centre…) is findable without giving each one its own pin.
 	const shown = $derived(
 		PLACES.filter(
 			(p) =>
 				(active === "All" || p.type === active) &&
-				(p.name.toLowerCase().includes(term.trim().toLowerCase()) ||
-					p.type.toLowerCase().includes(term.trim().toLowerCase())),
+				`${p.name} ${p.type} ${p.desc} ${p.inside?.join(" ") ?? ""}`.toLowerCase().includes(q),
 		),
 	);
+	// The facility the query hit, when the building's own name isn't what matched.
+	const hit = (p: Place) =>
+		q && !p.name.toLowerCase().includes(q) ? p.inside?.find((f) => f.toLowerCase().includes(q)) : undefined;
 
 	const col = (p: Place) => COLORS[p.type] || "#141414";
 	const dirUrl = (p: Place) => `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
@@ -223,9 +229,16 @@
 	// past its own threshold. Zoomed out the text keeps its pixel size while the campus shrinks,
 	// so it ends up straddling the map and colliding with the cluster bubbles; shrinking it with
 	// the zoom instead just made unreadable specks under those same bubbles.
+	// Which pins carry their name on the map. Hostels and food outlets are dense and repetitive —
+	// twenty near-identical words over one cluster — and the minimart is a shop inside a building
+	// that already names itself, so those stay pin-only. A ZONES word already spells the rest.
+	const UNNAMED = new Set(["Hostels", "Food"]);
+	const named = (p: Place) =>
+		!UNNAMED.has(p.type) && p.name !== "24/7 Minimart" && !ZONES.some((z) => z.text === p.name);
+
 	function renderZones() {
 		if (!map) return;
-		const z = map.getZoom();
+		const z = (zoom = map.getZoom());
 		for (const zone of ZONES) {
 			const label = zones.get(zone.text);
 			if (z >= zone.minZoom && shown.some((p) => p.type === zone.type)) label.addTo(map);
@@ -419,7 +432,11 @@
 
 			for (const p of PLACES) {
 				const icon = L.divIcon({
-					className: "", html: `<div class="pin" style="background:${col(p)}">${pinSvg(p.type)}</div>`,
+					className: "",
+					// Name under the pin, shown only past z18 (see .names) — zoomed out they overlap
+					// each other into mush.
+					html: `<div class="pin" style="background:${col(p)}">${pinSvg(p.type)}</div>` +
+						(named(p) ? `<div class="pname">${esc(p.name)}</div>` : ""),
 					iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -15],
 				});
 				const m = L.marker(p.pin ?? [p.lat, p.lng], { icon }).bindPopup(
@@ -440,7 +457,7 @@
 						zIndexOffset: -1000,
 						icon: L.divIcon({
 							className: "",
-							html: `<div class="zone${zone.tier ? ` ${zone.tier}` : ""}">${esc(zone.text)}</div>`,
+							html: `<div class="zone${zone.tier ? ` ${zone.tier}` : ""}" style="${zone.style ?? ""}">${esc(zone.text)}</div>`,
 							iconSize: [0, 0],
 						}),
 					}),
@@ -483,7 +500,7 @@
 	});
 </script>
 
-<div class="dora" class:dark={theme === "dark"} class:sat={basemap === "sat"}>
+<div class="dora" class:dark={theme === "dark"} class:sat={basemap === "sat"} class:names={zoom >= 18}>
 	<div id="dora-map" class="map" bind:this={mapEl}></div>
 
 	<div class="plaque">
@@ -539,11 +556,12 @@
 		>
 			<div class="list">
 				{#each shown as p (p.name)}
+					{@const f = hit(p)}
 					<div class="item" role="button" tabindex="0" onclick={() => focus(p)} onkeydown={(e) => (e.key === "Enter" || e.key === " ") && focus(p)}>
 						<div class="ic" style="background:{col(p)}">
 							<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{@html ICONS[p.type] || ""}</svg>
 						</div>
-						<div class="m"><h3>{p.name}</h3><div class="t">{p.type}</div></div>
+						<div class="m"><h3>{f ?? p.name}</h3><div class="t">{f ? `in ${p.name}` : p.type}</div></div>
 						<svg class="arw" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6" /></svg>
 					</div>
 				{:else}
@@ -631,6 +649,8 @@
 	.sat :global(.leaflet-tile-pane) { filter: none; }
 	.sat :global(.campus-mask) { fill: #0b0906; fill-opacity: 0.5; }
 	.sat :global(.zone) { color: #fff; opacity: 0.9; text-shadow: 0 0 5px #000, 0 0 9px #000; }
+	.names :global(.pname) { display: block; }
+	.sat :global(.pname) { color: #fff; text-shadow: 0 0 4px #000, 0 0 8px #000; }
 
 	.toggle {
 		position: absolute;
@@ -811,6 +831,12 @@
 		}
 		/* Cluster names sit a tier below the district names. */
 		.zone.sub { font-size: 10.5px; letter-spacing: 0.26em; opacity: 0.32; }
+		.pname {
+			position: absolute; left: 50%; top: 30px; transform: translateX(-50%);
+			display: none; white-space: nowrap; pointer-events: none;
+			font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 11px;
+			color: #191712; text-shadow: 0 0 4px #efe7d6, 0 0 4px #efe7d6, 0 0 4px #efe7d6;
+		}
 		.cluster {
 			position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
 			display: flex; align-items: center; gap: 3px; white-space: nowrap;

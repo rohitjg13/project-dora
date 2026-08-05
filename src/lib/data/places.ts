@@ -1,7 +1,9 @@
 // lat/lng = the REAL coordinate — used for the Google Maps directions link, never changed.
 // pin (optional) = where the marker is DRAWN on the map. Use it to separate blocks that
 // share one real coordinate onto their own buildings; directions still go to lat/lng.
-export type Place = { name: string; type: string; lat: number; lng: number; desc: string; pin?: [number, number] };
+// inside (optional) = things housed in this place that have no pin of their own. Searching one
+// finds the building, and the result row names what you typed ("CDC — in G Block").
+export type Place = { name: string; type: string; lat: number; lng: number; desc: string; pin?: [number, number]; inside?: string[] };
 
 export const PLACES: Place[] = [
 	// ---- Hostels ----
@@ -22,22 +24,23 @@ export const PLACES: Place[] = [
 	{ name: "Bandipur 5B", type: "Hostels", lat: 28.52314712848714, lng: 77.56926724298219, desc: "Residence block — Cluster 5.", pin: [28.522316725914767, 77.56986328974337] },
 	{ name: "Sariksa 6A", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
 	{ name: "Satpura 6B", type: "Hostels", lat: 28.522301236907072, lng: 77.57208801138445, desc: "Residence block — Cluster 6." },
+	{ name: "Eagle Nest", type: "Hostels", lat: 28.52435765569268, lng: 77.57240368967463, desc: "Visitors' hostel.", inside: ["Visitor's Hostel"] },
 	{ name: "Tower 6", type: "Hostels", lat: 28.52964229605966, lng: 77.57918257979603, desc: "Residence tower." , pin: [28.529767825360835, 77.57904861953008]},
 	{ name: "Tower 9", type: "Hostels", lat: 28.528214700714408, lng: 77.57789070602227, desc: "Residence tower." },
 
 	// ---- Academics ----
 	{ name: "A Block", type: "Academics", lat: 28.52708891065959, lng: 77.57693041797647, desc: "Lecture halls, labs and faculty offices." },
 	{ name: "B Block", type: "Academics", lat: 28.52675007233592, lng: 77.57607144744297, desc: "Lecture halls, labs and faculty offices." },
-	{ name: "C Block", type: "Academics", lat: 28.526292036291554, lng: 77.57549031781652, desc: "Lecture halls, labs and faculty offices." },
+	{ name: "C Block", type: "Academics", lat: 28.526292036291554, lng: 77.57549031781652, desc: "Lecture halls, labs and faculty offices — ATM and stationery shop.", inside: ["ATM", "Stationery Shop"] },
 	{ name: "D Block", type: "Academics", lat: 28.525540623117408, lng: 77.57510651447218, desc: "Lecture halls, labs and faculty offices." },
 	{ name: "F Block", type: "Academics", lat: 28.526752435633973, lng: 77.57337329149348, desc: "" },
-	{ name: "G Block", type: "Academics", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block and auditorium." },
+	{ name: "G Block", type: "Academics", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block — CDC, Admin Office, AI Centre and the auditorium.", pin: [28.527951615036070, 77.57472773952372], inside: ["CDC", "Career Development Centre", "Admin Office", "AI Centre", "Auditorium"] },
 	{ name: "R Block", type: "Academics", lat: 28.52742597909198, lng: 77.57825882679933, desc: "Research Block" },
 	{ name: "Central Library", type: "Academics", lat: 28.52499331991966, lng: 77.5750053021127, desc: "Campus library.", pin: [28.525002335830255, 77.57432485701858] },
 
 	// ---- Essentials ----
 	{ name: "Shopping Arcade", type: "Essentials", lat: 28.527623306472037, lng: 77.57252178901619, desc: "Campus shopping complex with a stationery store, Grabbo supermarket and pharmacy." },
-	{ name: "24/7 Minimart", type: "Essentials", lat: 28.524801058058845, lng: 77.57167585663186, desc: "24/7 convenience store for groceries, snacks, beverages and daily necessities." },
+	{ name: "24/7 Minimart", type: "Essentials", lat: 28.524801058058845, lng: 77.57167585663186, desc: "24/7 convenience store for groceries, snacks, beverages and daily necessities — Salon, ATM and HDFC Bank alongside.", inside: ["Salon", "ATM", "HDFC Bank"] },
 	{ name: "Fruits Shop", type: "Essentials", lat: 28.52875678841009, lng: 77.57750232344694, desc: "Fresh fruits, fruit juice and snacks outlet." },
 
 	// ---- Food ----
@@ -89,8 +92,15 @@ export const PLACES: Place[] = [
 // z17 and would collide with it, so they wait until z18, where that gap doubles.
 // Positions are the mean of the pins named in the comment; the districts are hand-placed
 // because an average drifts off into the fields west of the blocks.
-export const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; tier?: "sub" }[] = [
+// `style` is inline CSS on the word, for the odd one that has to sit at an angle — it overrides
+// .zone, so a transform there must repeat the translate(-50%, -50%) that centres the word.
+export const ZONES: { text: string; type: string; at: [number, number]; minZoom: number; tier?: "sub"; style?: string }[] = [
 	{ text: "Academic Blocks", type: "Academics", at: [28.525966, 77.576309], minZoom: 17 }, // over A-D
+	// The vista is an area, not a building, so it gets a district word rather than only a pin.
+	// Dropped ~10m south of the pin so the word clears the marker sitting on the same point.
+	// Angled to run along the vista itself, which lies NW–SE rather than across the map.
+	{ text: "Central Vista", type: "Landmarks", at: [28.526574, 77.575127], minZoom: 17,
+		style: "transform: translate(-50%, -50%) rotate(-65deg); font-size: 19px;" },
 	// Sunderbans 1A + Chilika 1B
 	{ text: "Cluster 1", type: "Hostels", at: [28.524431, 77.573049], minZoom: 18, tier: "sub" },
 	// Kaziranga 2BX + 2B, Hemis 2A, Periyar 2C
@@ -184,6 +194,9 @@ export const BUILDINGS: { type: string; ring: [number, number][] }[] = [
 	{ type: "Sports", ring: [[28.526053, 77.573731], [28.526247, 77.573669], [28.526418, 77.573545], [28.526548, 77.573369], [28.526627, 77.573157], [28.526648, 77.572928], [28.526608, 77.572703], [28.526512, 77.572500], [28.526368, 77.572339], [28.526187, 77.572291], [28.525984, 77.572240], [28.525789, 77.572221], [28.525604, 77.572315], [28.525452, 77.572467], [28.525346, 77.572663], [28.525296, 77.572885], [28.525305, 77.573115], [28.525374, 77.573332], [28.525495, 77.573515], [28.525659, 77.573650], [28.525851, 77.573724]] }, // Cricket Ground
 	{ type: "Green Places", ring: [[28.522864, 77.576365], [28.522530, 77.577393], [28.522275, 77.577266], [28.522065, 77.577100], [28.521948, 77.576986], [28.521816, 77.576732], [28.521679, 77.576560], [28.521493, 77.576419], [28.521283, 77.576350], [28.521064, 77.576373], [28.520770, 77.576375], [28.520435, 77.576282], [28.520154, 77.576180], [28.519920, 77.576072], [28.520292, 77.574998], [28.520450, 77.575220], [28.520591, 77.575322]] }, // SNU Biodiversity Park
 	{ type: "Sports", ring: [[28.522947, 77.571577], [28.522802, 77.571978], [28.523332, 77.572227], [28.523477, 77.571826]] }, // soccer
+	// Corners given by Rohit; OSM maps nothing here. Wound NW → NE → SE → SW so the ring
+	// doesn't cross itself — the corners as listed alternate sides.
+	{ type: "Sports", ring: [[28.527258, 77.573906], [28.527088, 77.574509], [28.526824, 77.574414], [28.526990, 77.573822]] }, // Box Cricket
 
 	// Traced from the Esri imagery the app already serves, after Rohit identified the block.
 	// OSM maps nothing at the towers — the nearest footprint is 112m away, in another cluster.
