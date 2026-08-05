@@ -232,15 +232,9 @@
 	// past its own threshold. Zoomed out the text keeps its pixel size while the campus shrinks,
 	// so it ends up straddling the map and colliding with the cluster bubbles; shrinking it with
 	// the zoom instead just made unreadable specks under those same bubbles.
-	// Which pins carry their name on the map. Hostels and food outlets are dense and repetitive —
-	// twenty near-identical words over one cluster — and the minimart is a shop inside a building
-	// that already names itself, so those stay pin-only. A ZONES word already spells the rest.
-	const UNNAMED = new Set(["Hostels", "Food"]);
-	// …except the two food areas, which are places you're told to meet at, not single outlets.
-	const NAMED = new Set(["CnD", "AnB"]);
-	const named = (p: Place) =>
-		(NAMED.has(p.name) || (!UNNAMED.has(p.type) && p.name !== "24/7 Minimart")) &&
-		!ZONES.some((z) => z.text === p.name);
+	// Which pins carry their name on the map. On this branch: all of them, to see how crowded the
+	// hostel clusters and food rows get. Only a place a ZONES word already spells is skipped.
+	const named = (p: Place) => !ZONES.some((z) => z.text === p.name);
 
 	function renderZones() {
 		if (!map) return;
