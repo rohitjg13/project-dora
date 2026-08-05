@@ -15,6 +15,9 @@
 		Sports: "#2f9e44",
 		Landmarks: "#b8860b",
 		"Green Places": "#0f766e",
+		// Polygon-only: the car parks are tarmac, so they get a cooler grey than an unnamed hall
+		// instead of Landmarks gold. Their pins are Landmarks, so this never becomes a chip.
+		Parking: "#5b6673",
 	};
 	// Buildings OSM tags but doesn't categorise — drawn, but kept quiet.
 	const NEUTRAL_BLDG = "#8a8168";
@@ -233,8 +236,11 @@
 	// twenty near-identical words over one cluster — and the minimart is a shop inside a building
 	// that already names itself, so those stay pin-only. A ZONES word already spells the rest.
 	const UNNAMED = new Set(["Hostels", "Food"]);
+	// …except the two food areas, which are places you're told to meet at, not single outlets.
+	const NAMED = new Set(["CnD", "AnB"]);
 	const named = (p: Place) =>
-		!UNNAMED.has(p.type) && p.name !== "24/7 Minimart" && !ZONES.some((z) => z.text === p.name);
+		(NAMED.has(p.name) || (!UNNAMED.has(p.type) && p.name !== "24/7 Minimart")) &&
+		!ZONES.some((z) => z.text === p.name);
 
 	function renderZones() {
 		if (!map) return;

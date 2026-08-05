@@ -82,6 +82,11 @@ export const PLACES: Place[] = [
 	{ name: "Inner Gate", type: "Landmarks", lat: 28.525514137061528, lng: 77.57166094490309, desc: "" },
 	{ name: "Central Vista", type: "Landmarks", lat: 28.52666454781784, lng: 77.57512666590725, desc: "" },
 
+	// Parking sits under Landmarks — three lots don't earn their own filter chip. The tarmac
+	// polygons keep their own grey (BUILDINGS below); only the pins are Landmarks.
+	{ name: "Parking 2", type: "Landmarks", lat: 28.527277503560864, lng: 77.57781537945772, desc: "Campus parking." },
+	{ name: "Parking 3", type: "Landmarks", lat: 28.528038598636147, lng: 77.57299481046077, desc: "Campus parking.", pin: [28.52782898642646, 77.57298894375226] },
+
 	// ---- Green Places ----
 	{ name: "SNU Biodiversity Park", type: "Green Places", lat: 28.521264875431715, lng: 77.5756026064942, desc: "Campus biodiversity park.", pin: [28.52114856955627, 77.57588802988606] },
 	{ name: "Lake SNU", type: "Green Places", lat: 28.525509504060498, lng: 77.57686470924014, desc: "Campus lake.", pin: [28.525092276417517, 77.5778472079545] },
@@ -196,6 +201,11 @@ export const BUILDINGS: { type: string; ring: [number, number][] }[] = [
 	{ type: "Sports", ring: [[28.522947, 77.571577], [28.522802, 77.571978], [28.523332, 77.572227], [28.523477, 77.571826]] }, // soccer
 	// Corners given by Rohit; OSM maps nothing here. Wound NW → NE → SE → SW so the ring
 	// doesn't cross itself — the corners as listed alternate sides.
+	{ type: "Parking", ring: [[28.527363, 77.577579], [28.527226, 77.578057], [28.526890, 77.577909], [28.527056, 77.577443]] }, // Parking 2
+	{ type: "Parking", ring: [[28.527686, 77.572768], [28.527590, 77.573050], [28.527966, 77.573220], [28.528052, 77.572915]] }, // Parking 3
+	// Parking 1, corners from Rohit. Its own grey, not the unnamed-building one — see COLORS.
+	// Closing node dropped, Leaflet closes the ring itself.
+	{ type: "Parking", ring: [[28.524622, 77.573838], [28.524385, 77.573914], [28.524130, 77.574632], [28.524334, 77.574725]] }, // Parking 1
 	{ type: "Sports", ring: [[28.527258, 77.573906], [28.527088, 77.574509], [28.526824, 77.574414], [28.526990, 77.573822]] }, // Box Cricket
 
 	// Traced from the Esri imagery the app already serves, after Rohit identified the block.

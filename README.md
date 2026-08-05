@@ -49,15 +49,16 @@ static/og/default.png          # Open Graph preview image
 
 ## Adding or editing places
 
-All places live in the `PLACES` array at the top of `DoraMaps.svelte`:
+All places live in the `PLACES` array in `src/lib/data/places.ts`:
 
 ```ts
-{ name: "A Block", type: "Academic Blocks", lat: 28.5270, lng: 77.5769, desc: "..." }
+{ name: "G Block", type: "Academics", lat: 28.5276, lng: 77.5749, desc: "...", inside: ["CDC", "Admin Office"] }
 ```
 
 - `type` must be one of the keys in `COLORS` (add a new key there plus an entry in `ICONS` to introduce a new category — filters are generated automatically).
 - `lat`/`lng` is the **real** coordinate, used for the Google Maps directions link.
 - `pin` (optional `[lat, lng]`) overrides where the marker is drawn — used to spread blocks that share one real coordinate across their own buildings, while directions still go to `lat`/`lng`.
+- `inside` (optional `string[]`) lists things housed in the place that get no pin of their own — G Block's CDC, the minimart's ATM. Searching one matches the building, and the result row shows what you typed above an "in G Block" line instead of the category. Use it wherever a facility would otherwise need a duplicate pin on the same roof; the search also reads `desc`, so a name only mentioned there is findable but won't get its own row heading.
 
 ## Map labels
 
