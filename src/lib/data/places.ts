@@ -34,7 +34,7 @@ export const PLACES: Place[] = [
 	{ name: "C Block", type: "Academics", lat: 28.526292036291554, lng: 77.57549031781652, desc: "Lecture halls, labs and faculty offices — ATM and stationery shop.", inside: ["ATM", "Stationery Shop"] },
 	{ name: "D Block", type: "Academics", lat: 28.525540623117408, lng: 77.57510651447218, desc: "Lecture halls, labs and faculty offices." },
 	{ name: "F Block", type: "Academics", lat: 28.526752435633973, lng: 77.57337329149348, desc: "" },
-	{ name: "G Block", type: "Academics", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block — CDC, Admin Office, AI Centre and the auditorium.", pin: [28.527951615036070, 77.57472773952372], inside: ["CDC", "Career Development Centre", "Admin Office", "AI Centre", "Auditorium"] },
+	{ name: "G Block", type: "Academics", lat: 28.52759808242438, lng: 77.57490189974872, desc: "Management block — CDC, Admin Office, AI Centre and the auditorium.", pin: [28.527951615036070, 77.57472773952372], inside: ["CDC", "Career Development Centre", "Admin Office", "AI Centre", "Auditorium", "IT Office"] },
 	{ name: "R Block", type: "Academics", lat: 28.52742597909198, lng: 77.57825882679933, desc: "Research Block" },
 	{ name: "Central Library", type: "Academics", lat: 28.52499331991966, lng: 77.5750053021127, desc: "Campus library.", pin: [28.525002335830255, 77.57432485701858] },
 
