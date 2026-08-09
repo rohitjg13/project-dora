@@ -177,6 +177,8 @@
 
 	const col = (p: Place) => COLORS[p.type] || "#141414";
 	const dirUrl = (p: Place) => `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
+	// Share handle: the name with everything but letters and digits dropped — "G Block" -> gblock.
+	const slug = (p: Place) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "");
 	const esc = (s: string) =>
 		(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string);
 
@@ -359,6 +361,21 @@
 		vv?.addEventListener("resize", onVV);
 		vv?.addEventListener("scroll", onVV);
 
+		// Popups are HTML strings handed to Leaflet, so the share buttons get one delegated listener.
+		const onShare = async (e: MouseEvent) => {
+			const btn = (e.target as HTMLElement)?.closest?.("[data-share]") as HTMLElement | null;
+			if (!btn) return;
+			const url = `${location.origin}${location.pathname}?share=${btn.dataset.share}`;
+			try {
+				await navigator.clipboard.writeText(url);
+				btn.classList.add("copied");
+				setTimeout(() => btn.classList.remove("copied"), 1400);
+			} catch {
+				prompt("Copy this link:", url);
+			}
+		};
+		document.addEventListener("click", onShare);
+
 		(async () => {
 			const leaflet = await import("leaflet");
 			L = (leaflet as any).default ?? leaflet;
@@ -442,8 +459,10 @@
 				const m = L.marker(p.pin ?? [p.lat, p.lng], { icon }).bindPopup(
 					`<div class="pop"><div class="pop-type" style="color:${col(p)}">${esc(p.type)}</div>` +
 						`<h4>${esc(p.name)}</h4><p>${esc(p.desc)}</p>` +
-						`<a class="dirbtn" href="${dirUrl(p)}" target="_blank" rel="noopener">Get directions` +
-						`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>`,
+						`<div class="pop-act"><a class="dirbtn" href="${dirUrl(p)}" target="_blank" rel="noopener">Get directions` +
+						`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` +
+						`<button class="sharebtn" type="button" data-share="${slug(p)}" title="Copy link to ${esc(p.name)}" aria-label="Copy link to ${esc(p.name)}">` +
+						`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg></button></div></div>`,
 				);
 				markers.set(p, m);
 			}
@@ -466,16 +485,22 @@
 			renderZones();
 
 			allBounds = L.featureGroup([...markers.values()]).getBounds();
-			map.fitBounds(
-				allBounds,
-				mobile
+			const want = new URLSearchParams(location.search).get("share");
+			const target = want ? PLACES.find((p) => slug(p) === want.toLowerCase()) : undefined;
+			map.fitBounds(allBounds, {
+				...(mobile
 					? { paddingTopLeft: [24, 24], paddingBottomRight: [24, 24] }
-					: { paddingTopLeft: [PANEL_W, 24], paddingBottomRight: [24, 24] },
-			);
+					: { paddingTopLeft: [PANEL_W, 24], paddingBottomRight: [24, 24] }),
+				// A ?share= link zooms straight to its pin. Left animated, this frame lands *after*
+				// that zoom and yanks the view back to the whole campus, closing the popup with it.
+				animate: !target,
+			});
 			renderMarkers();
+			if (target) focus(target);
 		})();
 
 		return () => {
+			document.removeEventListener("click", onShare);
 			document.body.style.overflow = prev;
 			mq.removeEventListener("change", onMq);
 			vv?.removeEventListener("resize", onVV);
@@ -635,7 +660,7 @@
 	.dark :global(.cluster) { box-shadow: none; }
 	.dark :global(.leaflet-popup-content-wrapper) { border-color: var(--line); }
 	.dark :global(.leaflet-popup-tip) { border-color: var(--line); }
-	.dark :global(.dirbtn) { border-color: var(--line); }
+	.dark :global(.dirbtn), .dark :global(.sharebtn) { border-color: var(--line); }
 
 	:global(.road) { stroke: #8fc8f0; stroke-opacity: 0.75; stroke-linecap: round; stroke-linejoin: round; }
 	.dark :global(.road) { stroke: #6fb0e0; stroke-opacity: 0.7; }
@@ -858,5 +883,20 @@
 		.pop p { color: var(--muted); font-size: 12.5px; line-height: 1.5; margin-bottom: 12px; }
 		.dirbtn { display: inline-flex; align-items: center; gap: 6px; background: var(--paper); color: var(--ink); font-weight: 700; font-size: 12px; letter-spacing: 0.02em; text-transform: uppercase; text-decoration: none; padding: 8px 13px; border: 2px solid var(--ink); border-radius: 3px; }
 		.dirbtn:hover { background: var(--accent); color: #fff; }
+		.pop-act { display: flex; align-items: stretch; gap: 6px; }
+		.sharebtn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 34px; background: var(--paper); color: var(--ink); padding: 0; border: 2px solid var(--ink); border-radius: 3px; cursor: pointer; }
+		.sharebtn svg { width: 14px; height: 14px; }
+		.sharebtn:hover { background: var(--accent); color: #fff; }
+		/* Confirmation floats above the button rather than resizing it — Leaflet measures and locks
+		   the popup's width when it opens, so anything that grows in the row afterwards gets clipped. */
+		.sharebtn { position: relative; }
+		.sharebtn.copied { background: var(--accent); color: #fff; }
+		.sharebtn.copied svg { display: none; }
+		.sharebtn.copied::before { content: "✓"; font-weight: 800; font-size: 14px; line-height: 1; }
+		.sharebtn.copied::after {
+			content: "Link copied"; position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%);
+			background: var(--ink); color: var(--card); font-weight: 700; font-size: 10.5px; letter-spacing: 0.04em;
+			text-transform: uppercase; white-space: nowrap; padding: 5px 8px; border-radius: 3px; pointer-events: none;
+		}
 	}
 </style>
