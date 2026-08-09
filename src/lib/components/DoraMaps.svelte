@@ -349,6 +349,20 @@
 			const btn = (e.target as HTMLElement)?.closest?.("[data-share]") as HTMLElement | null;
 			if (!btn) return;
 			const url = `${location.origin}${location.pathname}?share=${btn.dataset.share}`;
+			const name = btn.dataset.name ?? "this place";
+
+			// Phones get the real share sheet — WhatsApp and the class group are the point of the
+			// button. Cancelling the sheet throws AbortError and must stay a no-op: falling back to
+			// a copy there would claim to have done something the user just backed out of.
+			if (mobile && navigator.share) {
+				try {
+					await navigator.share({ title: name, text: `${name} — SNIoE campus map`, url });
+					return;
+				} catch (err) {
+					if ((err as Error)?.name === "AbortError") return;
+				}
+			}
+
 			try {
 				await navigator.clipboard.writeText(url);
 				btn.classList.add("copied");
@@ -444,7 +458,7 @@
 						`<h4>${esc(p.name)}</h4><p>${esc(p.desc)}</p>` +
 						`<div class="pop-act"><a class="dirbtn" href="${dirUrl(p)}" target="_blank" rel="noopener">Get directions` +
 						`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg></a>` +
-						`<button class="sharebtn" type="button" data-share="${slug(p)}" title="Copy link to ${esc(p.name)}" aria-label="Copy link to ${esc(p.name)}">` +
+						`<button class="sharebtn" type="button" data-share="${slug(p)}" data-name="${esc(p.name)}" title="Share ${esc(p.name)}" aria-label="Share ${esc(p.name)}">` +
 						`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg></button></div></div>`,
 				);
 				markers.set(p, m);
