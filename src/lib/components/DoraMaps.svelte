@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { replaceState } from "$app/navigation";
 	import "leaflet/dist/leaflet.css";
 	import "leaflet.markercluster/dist/MarkerCluster.css";
 	import { type Place, PLACES, ZONES, BUILDINGS, COLORS, slug, bySlug } from "$lib/data/places";
@@ -482,7 +483,8 @@
 			renderZones();
 
 			allBounds = L.featureGroup([...markers.values()]).getBounds();
-			const target = bySlug(new URLSearchParams(location.search).get("share"));
+			const want = new URLSearchParams(location.search).get("share");
+			const target = bySlug(want);
 			map.fitBounds(allBounds, {
 				...(mobile
 					? { paddingTopLeft: [24, 24], paddingBottomRight: [24, 24] }
@@ -493,6 +495,11 @@
 			});
 			renderMarkers();
 			if (target) focus(target);
+			// Drop ?share= once it has done its job, so a refresh or a bookmark isn't stuck reopening
+			// the same popup. Crawlers read the meta tags server-side and never get this far, so the
+			// link previews the same either way. replaceState, not push: the share link was the entry
+			// point, and Back should leave the site rather than re-enter it.
+			if (want) replaceState(location.pathname, {});
 		})();
 
 		return () => {
