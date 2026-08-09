@@ -2,23 +2,8 @@
 	import { onMount } from "svelte";
 	import "leaflet/dist/leaflet.css";
 	import "leaflet.markercluster/dist/MarkerCluster.css";
-	import { type Place, PLACES, ZONES, BUILDINGS } from "$lib/data/places";
+	import { type Place, PLACES, ZONES, BUILDINGS, COLORS, slug, bySlug } from "$lib/data/places";
 
-	// Category → pin colour (muted, editorial palette)
-	const COLORS: Record<string, string> = {
-		Hostels: "#2f5fd8",
-		"Academics": "#d21f4b",
-		Essentials: "#0ea5c4",
-		Food: "#f2960b",
-		Healthcare: "#e8311c",
-		"Dining Hall": "#9d2fd1",
-		Sports: "#2f9e44",
-		Landmarks: "#b8860b",
-		"Green Places": "#0f766e",
-		// Polygon-only: the car parks are tarmac, so they get a cooler grey than an unnamed hall
-		// instead of Landmarks gold. Their pins are Landmarks, so this never becomes a chip.
-		Parking: "#5b6673",
-	};
 	// Buildings OSM tags but doesn't categorise — drawn, but kept quiet.
 	const NEUTRAL_BLDG = "#8a8168";
 
@@ -177,8 +162,6 @@
 
 	const col = (p: Place) => COLORS[p.type] || "#141414";
 	const dirUrl = (p: Place) => `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
-	// Share handle: the name with everything but letters and digits dropped — "G Block" -> gblock.
-	const slug = (p: Place) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "");
 	const esc = (s: string) =>
 		(s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] as string);
 
@@ -485,8 +468,7 @@
 			renderZones();
 
 			allBounds = L.featureGroup([...markers.values()]).getBounds();
-			const want = new URLSearchParams(location.search).get("share");
-			const target = want ? PLACES.find((p) => slug(p) === want.toLowerCase()) : undefined;
+			const target = bySlug(new URLSearchParams(location.search).get("share"));
 			map.fitBounds(allBounds, {
 				...(mobile
 					? { paddingTopLeft: [24, 24], paddingBottomRight: [24, 24] }

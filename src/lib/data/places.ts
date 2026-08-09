@@ -5,6 +5,29 @@
 // finds the building, and the result row names what you typed ("CDC — in G Block").
 export type Place = { name: string; type: string; lat: number; lng: number; desc: string; pin?: [number, number]; inside?: string[] };
 
+// Category → pin colour (muted, editorial palette). Lives here, not in the map component, so the
+// OG card route can colour a place the same way its pin is coloured.
+export const COLORS: Record<string, string> = {
+	Hostels: "#2f5fd8",
+	"Academics": "#d21f4b",
+	Essentials: "#0ea5c4",
+	Food: "#f2960b",
+	Healthcare: "#e8311c",
+	"Dining Hall": "#9d2fd1",
+	Sports: "#2f9e44",
+	Landmarks: "#b8860b",
+	"Green Places": "#0f766e",
+	// Polygon-only: the car parks are tarmac, so they get a cooler grey than an unnamed hall
+	// instead of Landmarks gold. Their pins are Landmarks, so this never becomes a chip.
+	Parking: "#5b6673",
+};
+
+// Share handle: the name with everything but letters and digits dropped — "G Block" -> gblock.
+// Used for ?share= links and their OG image filenames. Verified collision-free across PLACES.
+export const slug = (p: Place) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+export const bySlug = (s: string | null) =>
+	s ? PLACES.find((p) => slug(p) === s.toLowerCase()) : undefined;
+
 export const PLACES: Place[] = [
 	// ---- Hostels ----
 	{ name: "Sunderbans 1A", type: "Hostels", lat: 28.524549807654314, lng: 77.57374625428459, desc: "Residence block — Cluster 1.", pin: [28.524729348381705, 77.57302623458426] },
