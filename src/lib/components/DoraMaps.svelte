@@ -484,8 +484,13 @@
 			renderZones();
 
 			allBounds = L.featureGroup([...markers.values()]).getBounds();
-			const want = new URLSearchParams(location.search).get("share");
-			const target = bySlug(want);
+			// Two ways in: /place/satpura and /?share=satpura. Drop src/routes/place/ and the first
+			// form stops existing, leaving this line harmlessly matching nothing.
+			const want =
+				new URLSearchParams(location.search).get("share") ??
+				location.pathname.match(/^\/place\/([^/]+)\/?$/)?.[1] ??
+				null;
+			const target = bySlug(want ? decodeURIComponent(want) : null);
 			map.fitBounds(allBounds, {
 				...(mobile
 					? { paddingTopLeft: [24, 24], paddingBottomRight: [24, 24] }
@@ -496,11 +501,11 @@
 			});
 			renderMarkers();
 			if (target) focus(target);
-			// Drop ?share= once it has done its job, so a refresh or a bookmark isn't stuck reopening
-			// the same popup. Crawlers read the meta tags server-side and never get this far, so the
-			// link previews the same either way. replaceState, not push: the share link was the entry
-			// point, and Back should leave the site rather than re-enter it.
-			if (want) replaceState(location.pathname, {});
+			// Back to a bare "/" once the link has done its job, so a refresh or a bookmark isn't
+			// stuck reopening the same popup. Crawlers read the meta tags server-side and never get
+			// this far, so the link previews the same either way. replaceState, not push: the share
+			// link was the entry point, and Back should leave the site rather than re-enter it.
+			if (want) replaceState("/", {});
 		})();
 
 		return () => {

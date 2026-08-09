@@ -25,8 +25,16 @@ export const COLORS: Record<string, string> = {
 // Share handle: the name with everything but letters and digits dropped — "G Block" -> gblock.
 // Used for ?share= links and their OG image filenames. Verified collision-free across PLACES.
 export const slug = (p: Place) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-export const bySlug = (s: string | null) =>
+export const bySlug = (s: string | null | undefined) =>
 	s ? PLACES.find((p) => slug(p) === s.toLowerCase()) : undefined;
+
+// What a shared place looks like to a link crawler. Shared by "/" (?share=) and "/[slug]" so the
+// two entry points can't drift apart.
+export const shareMeta = (p: Place) => ({
+	title: p.name,
+	description: `${p.desc || p.type + " on the SNIoE campus."} Open it on the campus map for one-tap Google Maps directions.`,
+	image: `place/${slug(p)}`,
+});
 
 export const PLACES: Place[] = [
 	// ---- Hostels ----
