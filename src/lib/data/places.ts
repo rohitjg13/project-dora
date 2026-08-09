@@ -25,8 +25,11 @@ export const COLORS: Record<string, string> = {
 // Share handle: the name with everything but letters and digits dropped — "G Block" -> gblock.
 // Used for ?share= links and their OG image filenames. Verified collision-free across PLACES.
 export const slug = (p: Place) => p.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-export const bySlug = (s: string | null | undefined) =>
-	s ? PLACES.find((p) => slug(p) === s.toLowerCase()) : undefined;
+export const bySlug = (s: string | null | undefined) => {
+	if (!s) return undefined;
+	const key = s.toLowerCase().replace(/[^a-z0-9]/g, "");
+	return PLACES.find((p) => slug(p) === key) ?? aliases().get(key);
+};
 
 // What a shared place looks like to a link crawler. Shared by "/" (?share=) and "/[slug]" so the
 // two entry points can't drift apart.
@@ -244,3 +247,27 @@ export const BUILDINGS: { type: string; ring: [number, number][] }[] = [
 	{ type: "Hostels", ring: [[28.528136, 77.577950], [28.528188, 77.577795], [28.528379, 77.577870], [28.528353, 77.577937], [28.528313, 77.577923], [28.528301, 77.577972], [28.528435, 77.578036], [28.528360, 77.578090], [28.528353, 77.578109], [28.528565, 77.578194], [28.528546, 77.578253], [28.528494, 77.578229], [28.528471, 77.578286], [28.528598, 77.578339], [28.528577, 77.578412], [28.528534, 77.578398], [28.528529, 77.578420], [28.528562, 77.578441], [28.528546, 77.578497], [28.528374, 77.578420], [28.528388, 77.578366], [28.528438, 77.578377], [28.528449, 77.578326], [28.528322, 77.578259], [28.528329, 77.578224], [28.528376, 77.578235], [28.528379, 77.578197], [28.528195, 77.578119], [28.528233, 77.578001], [28.528131, 77.577942]] }, // Tower 9
 	{ type: "Hostels", ring: [[28.529791, 77.578910], [28.529766, 77.578986], [28.529840, 77.579018], [28.529824, 77.579077], [28.529706, 77.579021], [28.529732, 77.578887], [28.529781, 77.578819], [28.529865, 77.578851], [28.529884, 77.578797], [28.530041, 77.578858], [28.529998, 77.578916], [28.529939, 77.578888], [28.529931, 77.578931], [28.529984, 77.578956], [28.529959, 77.579016], [28.529863, 77.578985], [28.529872, 77.578938]] }, // Tower 6
 ];
+
+// Nobody says "Satpura 6B" out loud, so a share link takes the bare name too: /place/satpura finds
+// Satpura 6B. Keyed on the name minus a trailing block code (digits then letters — "6B", "2BX"),
+// which is what every hostel name ends in and nothing else does. "Tower 6" is left alone: its
+// trailing token is digits only, and a bare "tower" would be a coin flip between towers 6 and 9.
+//
+// Built on first lookup, not at import: this file is one module, and a top-level map would be
+// evaluated above the PLACES literal it reads.
+let ALIASES: Map<string, Place> | undefined;
+function aliases() {
+	if (ALIASES) return ALIASES;
+	const byBase = new Map<string, Place[]>();
+	for (const p of PLACES) {
+		const base = p.name.replace(/\s+\d+[a-z]+$/i, "");
+		if (base === p.name) continue;
+		const key = base.toLowerCase().replace(/[^a-z0-9]/g, "");
+		byBase.set(key, [...(byBase.get(key) ?? []), p]);
+	}
+	// Kaziranga is the one base two blocks share (2B and 2BX). Shortest name wins — 2BX reads as an
+	// annex of 2B — rather than whichever happens to sit first in PLACES.
+	return (ALIASES = new Map(
+		[...byBase].map(([k, v]) => [k, v.sort((a, b) => a.name.length - b.name.length)[0]]),
+	));
+}
